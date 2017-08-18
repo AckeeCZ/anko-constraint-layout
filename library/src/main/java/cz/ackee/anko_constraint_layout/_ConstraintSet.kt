@@ -25,9 +25,8 @@ open class _ConstraintSet : ConstraintSet() {
             field = value
         }
 
-    val UNDEFINED = Int.MAX_VALUE
+    private val UNDEFINED = Int.MAX_VALUE
 
-    @Suppress("unused")
     val parentId: Int = ConstraintLayout.LayoutParams.PARENT_ID
 
     val matchConstraintWrap: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_WRAP
@@ -51,6 +50,7 @@ open class _ConstraintSet : ConstraintSet() {
     val ENDS: SideSide = END to END
     val HORIZONTAL: SideSide = SideSide(-1, -1)
     val VERTICAL: SideSide = SideSide(-2, -2)
+    val ALL: SideSide = SideSide(-3, -3)
 
     val CHAIN_SPREAD = ConstraintLayout.LayoutParams.CHAIN_SPREAD
     val CHAIN_SPREAD_INSIDE = ConstraintLayout.LayoutParams.CHAIN_SPREAD_INSIDE
@@ -99,12 +99,14 @@ open class _ConstraintSet : ConstraintSet() {
                 when (sides) {
                     HORIZONTAL -> connectHorizontal(this.id, endId)
                     VERTICAL -> connectVertical(this.id, endId)
+                    ALL -> connectAll(this.id, endId)
                     else -> connect(sides.start of this.id, sides.end of endId)
                 }
             } else {
                 when (sides) {
                     HORIZONTAL -> connectHorizontal(this.id, endId, margin)
                     VERTICAL -> connectVertical(this.id, endId, margin)
+                    ALL -> connectAll(this.id, endId, margin)
                     else -> connect(sides.start of this.id, sides.end of endId, margin)
                 }
             }
@@ -120,6 +122,12 @@ open class _ConstraintSet : ConstraintSet() {
         }
     }
 
+    /**
+     * Generates a unique ID for a view.
+     * Does nothing on version prior to Android version 17.
+     * Warning: Don't rely on this function for views which should persist their state. There is
+     * no guarantee that the same view will get the same generated ID after a configuration change.
+     */
     private fun generateIds(vararg views: View) {
         if (generateIds && Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
             views.forEach {
@@ -170,12 +178,12 @@ open class _ConstraintSet : ConstraintSet() {
     //</editor-fold>
 
     //<editor-fold desc="<< connect***() overloads>>">
+    fun connectBaseline(viewId: Int, targetId: Int) {
+        connect(viewId, BASELINE, targetId, BASELINE)
+    }
     private fun connectBaseline(viewId: Int, targetId: Int, margin: Int) {
         Log.w(TAG, "Baseline connection cannot define margin. Check your definition.")
         connectBaseline(viewId, targetId)
-    }
-    fun connectBaseline(viewId: Int, targetId: Int) {
-        connect(viewId, BASELINE, targetId, BASELINE)
     }
     fun connectHorizontal(viewId: Int, targetId: Int) {
         connect(viewId, START, targetId, START)
@@ -196,6 +204,14 @@ open class _ConstraintSet : ConstraintSet() {
     fun connectVertical(viewId: Int, targetId: Int, margin: Int) {
         connect(viewId, TOP, targetId, TOP, margin)
         connect(viewId, BOTTOM, targetId, BOTTOM, margin)
+    }
+    fun connectAll(viewId: Int, targetId: Int) {
+        connectVertical(viewId, targetId)
+        connectHorizontal(viewId, targetId)
+    }
+    fun connectAll(viewId: Int, targetId: Int, margin: Int) {
+        connectVertical(viewId, targetId, margin)
+        connectHorizontal(viewId, targetId, margin)
     }
     //</editor-fold>
 

@@ -27,6 +27,14 @@ import org.jetbrains.anko.custom.ankoView
 @Suppress("NOTHING_TO_INLINE")
 open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
 
+    @Suppress("unused")
+    val matchConstraint: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+    @Suppress("unused")
+    val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
+    @Suppress("unused")
+    val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+
     // TODO: groups
     // TODO: barrier
     // TODO: placeholders
@@ -51,16 +59,7 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     }
 
 
-    @Suppress("unused")
-    val matchConstraint: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-    @Suppress("unused")
-    val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
-    @Suppress("unused")
-    val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
-
-
     //<editor-fold desc="<< lparams() overloads >>">
-
     inline fun <T : View> T.lparams(
             c: Context?,
             attrs: AttributeSet?,
@@ -163,7 +162,6 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
         this@lparams.layoutParams = layoutParams
         return this
     }
-
     //</editor-fold>
 }
 
@@ -173,9 +171,7 @@ inline fun newId(): Int {
 }
 
 
-
 //<editor-fold desc="<< constraintLayout() extensions >>">
-
 inline fun ViewManager.constraintLayout(): _ConstraintLayout = constraintLayout {}
 inline fun ViewManager.constraintLayout(init: (@AnkoViewDslMarker _ConstraintLayout).() -> Unit): _ConstraintLayout {
     return ankoView(::_ConstraintLayout, theme = 0) { init() }
@@ -200,5 +196,4 @@ inline fun Activity.constraintLayout(): _ConstraintLayout = constraintLayout {}
 inline fun Activity.constraintLayout(init: (@AnkoViewDslMarker _ConstraintLayout).() -> Unit): _ConstraintLayout {
     return ankoView(::_ConstraintLayout, theme = 0) { init() }
 }
-
 //</editor-fold>
