@@ -1,6 +1,7 @@
 package cz.ackee.anko_constraint_layout
 
 import android.content.Context
+import android.os.Build
 import android.support.constraint.ConstraintSet
 import android.transition.TransitionManager
 import android.view.View
@@ -21,7 +22,6 @@ class MainActivityUI : AnkoComponent<MainActivity> {
 
     private fun ViewManager.defaultTextView(text: CharSequence, init: TextView.() -> Unit): TextView {
         return textView(text) {
-            id = newId()
             textColor = 0xFF000000.toInt()
             init()
         }
@@ -40,11 +40,11 @@ class MainActivityUI : AnkoComponent<MainActivity> {
 
 
             val image = imageView {
-                id = newId()
                 scaleType = ImageView.ScaleType.CENTER
                 imageResource = R.drawable.nav_header_bg
             }.lparams(matchConstraint, matchConstraint) {
                 dimensionRatio = "H,16:9"
+                matchConstraintPercentHeight = 1f
             }
 
 
@@ -58,12 +58,11 @@ class MainActivityUI : AnkoComponent<MainActivity> {
                 textSize = 14f
             }
 
-            val button = button {
-                id = newId()
-                text = "Click me"
-
+            val button = button("Click me") {
                 setOnClickListener {
-                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        TransitionManager.beginDelayedTransition(constraintLayout)
+                    }
                     if (isActivated) {
                         constraints2.applyTo(constraintLayout)
                     } else {
@@ -73,7 +72,6 @@ class MainActivityUI : AnkoComponent<MainActivity> {
                 }
             }
 
-
             constraints1 = constraints(generateIds = true) {
 
                 val centerGuideId: Int = verticalGuidelinePercent(0.5f)
@@ -81,14 +79,14 @@ class MainActivityUI : AnkoComponent<MainActivity> {
                 name.connect(   STARTS of parentId with 16.dp,
                                 TOPS of parentId with 16.dp)
 
-                surname.connect(TOP to BOTTOM of name.id,
-                                STARTS of name.id)
+                surname.connect(TOP to BOTTOM of name,
+                                STARTS of name)
 
-                age.connect(    START to END of surname.id with 8.dp,
-                                BASELINES of surname.id)
+                age.connect(    START to END of surname with 8.dp,
+                                BASELINES of surname)
 
-                button.connect( RIGHTS of image.id,
-                                TOP to BOTTOM of image.id)
+                button.connect( RIGHTS of image,
+                                TOP to BOTTOM of image)
 
                 image.connect(  RIGHTS of centerGuideId,
                                 TOPS of parentId,
@@ -102,7 +100,7 @@ class MainActivityUI : AnkoComponent<MainActivity> {
                 name.connect(   START to START of leftGuideId,
                                 TOPS of parentId with 32.dp)
 
-                surname.connect(HORIZONTAL of name.id)
+                surname.connect(HORIZONTAL of name)
 
                 button.reset(BOTTOM)
                 button.connect( HORIZONTAL of rightGuideId,

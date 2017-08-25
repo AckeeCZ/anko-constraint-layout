@@ -4,8 +4,6 @@ package cz.ackee.anko_constraint_layout
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
-import android.support.annotation.RequiresApi
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
@@ -18,37 +16,28 @@ import org.jetbrains.anko.custom.ankoView
 /**
  * Anko extensions for ConstraintLayout
  *
- * @see [constraintlayout.com](https://constraintlayout.com/)
- * @see [developer.android.com](https://developer.android.com/training/constraint-layout/index.html)
+ * For more information about Constraint Layout in general, check out these websites:
+ *  - [constraintlayout.com](https://constraintlayout.com/)
+ *  - [developer.android.com/constraint-layout](https://developer.android.com/training/constraint-layout/index.html)
+ *  - [realm.io/advanced-constraintlayout](https://academy.realm.io/posts/360-andev-2017-nicolas-roard-advanced-constraintlayout/)
  *
  * @author David Khol [david.khol@ackee.cz]
  * @since 9.8.2017
  **/
-@Suppress("NOTHING_TO_INLINE")
+@Suppress("NOTHING_TO_INLINE", "unused")
 open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
 
-    @Suppress("unused")
     val matchConstraint: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-    @Suppress("unused")
     val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
-    @Suppress("unused")
     val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
 
 
-    // TODO: groups
-    // TODO: barrier
     // TODO: placeholders
-
-    // TODO: placeholders
-
     // TODO: chains
-
     // TODO: aspect ratio
     // TODO: percent dimensions
 
-    /**
-     * TODO: generateIds is not generating ids in all cases!
-     */
+
     inline fun constraints(generateIds: Boolean = false, init: _ConstraintSet.() -> Unit): _ConstraintSet {
         val constraintSet = _ConstraintSet()
         constraintSet.clone(this)
@@ -163,11 +152,6 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
         return this
     }
     //</editor-fold>
-}
-
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-inline fun newId(): Int {
-    return View.generateViewId()
 }
 
 
