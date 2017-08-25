@@ -1,43 +1,27 @@
 package cz.ackee.anko_constraint_layout
 
-import android.content.Context
 import android.os.Build
 import android.support.constraint.ConstraintSet
 import android.transition.TransitionManager
 import android.view.View
-import android.view.ViewManager
 import android.widget.ImageView
-import android.widget.TextView
 import org.jetbrains.anko.*
+
+
 
 /**
  * @author David Khol [david.khol@ackee.cz]
  * @since 18. 8. 2017
  **/
-class MainActivityUI : AnkoComponent<MainActivity> {
-
-    private lateinit var context: Context
-    private val Int.dp: Int get() = this.dpf.toInt()
-    private val Int.dpf: Float get() = this * context.resources.displayMetrics.density
-
-    private fun ViewManager.defaultTextView(text: CharSequence, init: TextView.() -> Unit): TextView {
-        return textView(text) {
-            textColor = 0xFF000000.toInt()
-            init()
-        }
-    }
-
+class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
     lateinit var constraints1: ConstraintSet
     lateinit var constraints2: ConstraintSet
 
-    override fun createView(ui: AnkoContext<MainActivity>): View {
-        context = ui.ctx
-
+    override fun create(ui: AnkoContext<MainActivity>): View {
         return ui.constraintLayout {
 
             val constraintLayout = this
-
 
             val image = imageView {
                 scaleType = ImageView.ScaleType.CENTER
@@ -48,10 +32,10 @@ class MainActivityUI : AnkoComponent<MainActivity> {
             }
 
 
-            val name = defaultTextView("Marek") {
+            val name = defaultTextView("Joe") {
                 textSize = 20f
             }
-            val surname = defaultTextView("Pokorný") {
+            val surname = defaultTextView("Thompson") {
                 textSize = 26f
             }
             val age = defaultTextView("(32)") {
