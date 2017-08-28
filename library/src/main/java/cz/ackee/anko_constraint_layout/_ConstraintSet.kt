@@ -82,6 +82,8 @@ open class _ConstraintSet : ConstraintSet() {
     }
 
     fun View.connect(vararg connections: SideSideViewId) {
+        generateId()
+
         connections.forEach {
             val sides = it.sides
             val endId = it.viewId

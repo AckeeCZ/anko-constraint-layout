@@ -7,8 +7,6 @@ import android.view.View
 import android.widget.ImageView
 import org.jetbrains.anko.*
 
-
-
 /**
  * @author David Khol [david.khol@ackee.cz]
  * @since 18. 8. 2017
@@ -20,8 +18,6 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
     override fun create(ui: AnkoContext<MainActivity>): View {
         return ui.constraintLayout {
-
-            val constraintLayout = this
 
             val image = imageView {
                 scaleType = ImageView.ScaleType.CENTER
@@ -45,12 +41,12 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
             val button = button("Click me") {
                 setOnClickListener {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        TransitionManager.beginDelayedTransition(constraintLayout)
+                        TransitionManager.beginDelayedTransition(this@constraintLayout)
                     }
                     if (isActivated) {
-                        constraints2.applyTo(constraintLayout)
+                        constraints2.applyTo(this@constraintLayout)
                     } else {
-                        constraints1.applyTo(constraintLayout)
+                        constraints1.applyTo(this@constraintLayout)
                     }
                     isActivated = !isActivated
                 }

@@ -21,7 +21,6 @@ abstract class AnkoComponentEx<in T>: AnkoComponent<T> {
 
 	protected fun ViewManager.defaultTextView(text: CharSequence, init: TextView.() -> Unit): TextView {
 		return textView(text) {
-			id = newId()
 			textColor = 0xFF000000.toInt()
 			init()
 		}
