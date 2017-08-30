@@ -23,7 +23,7 @@ open class _ConstraintSet : ConstraintSet() {
     private val TAG: String = javaClass.simpleName
     private val UNDEFINED = Int.MAX_VALUE
 
-    var generateIds: Boolean = false
+    var generateIds: Boolean = true
 
     val parentId: ViewId = ConstraintLayout.LayoutParams.PARENT_ID
 
@@ -109,10 +109,11 @@ open class _ConstraintSet : ConstraintSet() {
 
 
     //<editor-fold desc="<< connect() overloads >>">
-    private fun View.generateId() {
+    private fun View.generateId(): Int {
         if (generateIds && id == 0) {
             id = newId()
         }
+        return id
     }
 
     /**
@@ -209,9 +210,7 @@ open class _ConstraintSet : ConstraintSet() {
     }
     //</editor-fold>
 
-    open inner class SideView(side: Side, val view: View) : SideViewId(side, view.id) {
-        init { view.generateId() }
-    }
+    open inner class SideView(side: Side, val view: View) : SideViewId(side, view.generateId())
     open inner class SideViewId(val side: Side, val viewId: ViewId)
     open inner class SideViewSide(val sideView: SideView, side: Side) : SideViewIdSide(sideView, side)
     open inner class SideViewIdSide(val sideViewId: SideViewId, val side: Side)
@@ -232,9 +231,7 @@ open class _ConstraintSet : ConstraintSet() {
 
     // SideSide* classes are used in view.connect(vararg) methods
     open inner class SideSide(val start: Side, val end: Side)
-    open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id) {
-        init { view.generateId() }
-    }
+    open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.generateId())
     open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
     open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int): SideSideViewId(sides, viewId)
 

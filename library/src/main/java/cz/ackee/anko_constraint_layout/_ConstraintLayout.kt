@@ -38,7 +38,7 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     // TODO: percent dimensions
 
 
-    inline fun constraints(generateIds: Boolean = false, init: _ConstraintSet.() -> Unit): _ConstraintSet {
+    inline fun constraints(generateIds: Boolean = true, init: _ConstraintSet.() -> Unit): _ConstraintSet {
         val constraintSet = _ConstraintSet()
         constraintSet.clone(this)
         constraintSet.generateIds = generateIds
