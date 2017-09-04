@@ -6,6 +6,23 @@ import android.support.constraint.Guideline
 import android.widget.LinearLayout
 import org.jetbrains.anko.custom.ankoView
 
+/**
+ * A set of helper functions to generate a Guideline view.
+ *
+ * If you don't specify id for the guideline, new unique id will be generated automatically.
+ *
+ * There are no more settings for Guideline except its orientation and guide size (margin /
+ * percentage). For that reason init lambda is not provided as serves no purpose.
+ *
+ * These extension functions generate a [Guideline] as a [View]. Use these functions inside of
+ * constraintLayout {} init block, not inside of constraints {} block. For definition of guidelines
+ * within constraints {} block, use [_ConstraintSet.guideline] functions instead.
+ *
+ * @see [_ConstraintSet.guideline]
+ * @author David Khol [david.khol@ackee.cz]
+ * @since 18.8.2017
+ */
+
 fun _ConstraintLayout.verticalGuidelineBegin(guide: Int) = verticalGuidelineBegin(ViewIdGenerator.newId(), guide)
 fun _ConstraintLayout.verticalGuidelineEnd(guide: Int) = verticalGuidelineEnd(ViewIdGenerator.newId(), guide)
 fun _ConstraintLayout.verticalGuidelinePercent(guide: Float) = verticalGuidelinePercent(ViewIdGenerator.newId(), guide)

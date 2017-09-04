@@ -16,6 +16,29 @@ import org.jetbrains.anko.custom.ankoView
 /**
  * Anko extensions for ConstraintLayout
  *
+ *
+ * Typical usage of Anko Constraint Layout looks like this:
+ *
+ * ```
+ * val name = textView("Joe")
+ * val age = textView("Thompson")
+ * val avatar = imageView(R.drawable.ic_avatar)
+ * 
+ * constraints {
+ *     name.connect(
+ *         STARTS of parentId with 16.dp,
+ *         TOPS of parentId with 16.dp)
+ * 
+ *     age.connect(
+ *         START to END of name with 8.dp,
+ *         BASELINES of name)
+ * 
+ *     avatar.connect(
+ *         HORIZONTAL of name,
+ *         TOP to BOTTOM of name with 8.dp)
+ * }
+ * ```
+ *
  * For more information about Constraint Layout in general, check out these websites:
  *  - [constraintlayout.com](https://constraintlayout.com/)
  *  - [developer.android.com/constraint-layout](https://developer.android.com/training/constraint-layout/index.html)

@@ -74,6 +74,46 @@ open class _ConstraintSet : ConstraintSet() {
     open fun horizontalGuidelinePercent(guide: Float) = guidelinePercent(LinearLayout.HORIZONTAL, guide)
     //</editor-fold>
 
+    //<editor-fold desc="<< Chains definitions >>">
+    // TODO: 3. 9. 2017 david.khol: add more sophisticated chain DSL
+    // TODO: 3. 9. 2017 david.khol: add dynamic changing of chain types
+    // TODO: 4. 9. 2017 david.khol: check if provided ids are invalid
+
+    open inner class Chain {
+        open var viewIds: IntArray = intArrayOf()
+        open var weights: FloatArray? = null
+
+        open fun views(vararg views: View) {
+            this.viewIds = views.map { it.generateId() }.toIntArray()
+        }
+        open fun viewIds(vararg viewIds: ViewId) {
+            this.viewIds = viewIds
+        }
+        open fun weights(vararg weights: Float) {
+            this.weights = weights
+        }
+    }
+
+    open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType, init: Chain.() -> Unit) {
+        val horizontal = listOf(LEFT, RIGHT)
+        val vertical = listOf(TOP, BOTTOM)
+        val horizontalRtl = listOf(START, END)
+
+        val chain = Chain()
+        chain.init()
+
+        if (begin.side in horizontal && end.side in horizontal) {
+            createHorizontalChain(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
+        } else if (begin.side in vertical && end.side in vertical) {
+            createVerticalChain(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
+        } else if (begin.side in horizontalRtl && end.side in horizontalRtl) {
+            createHorizontalChainRtl(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
+        } else {
+            throw IllegalArgumentException("Cannot create a chain for supplied sides: ${begin.side} together with ${end.side}")
+        }
+    }
+    //</editor-fold>
+
 
     fun View.reset(vararg sides: Side) {
         sides.forEach {

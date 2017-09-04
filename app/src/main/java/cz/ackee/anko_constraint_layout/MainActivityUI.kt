@@ -2,6 +2,7 @@ package cz.ackee.anko_constraint_layout
 
 import android.os.Build
 import android.support.constraint.ConstraintSet
+import android.support.constraint.Group
 import android.transition.TransitionManager
 import android.view.View
 import android.widget.ImageView
@@ -9,7 +10,7 @@ import org.jetbrains.anko.*
 
 /**
  * @author David Khol [david.khol@ackee.cz]
- * @since 18. 8. 2017
+ * @since 18.8.2017
  **/
 class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
@@ -73,9 +74,16 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                                 LEFTS of parentId)
             }
 
+            val group: Group = this.group(name, surname)
+            group.visibility = View.VISIBLE
+
             constraints2 = constraints {
                 val leftGuideId: Int = verticalGuidelineBegin(72.dp)
                 val rightGuideId: Int = verticalGuidelinePercent(0.8f)
+
+                chain(TOP of parentId, BOTTOM of parentId, CHAIN_PACKED) {
+                    views(name, surname, button)
+                }
 
                 name.connect(   START to START of leftGuideId,
                                 TOPS of parentId with 32.dp)
