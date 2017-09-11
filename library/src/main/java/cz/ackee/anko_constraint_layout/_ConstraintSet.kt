@@ -12,6 +12,28 @@ typealias Side = Int
 typealias ViewId = Int
 typealias ChainType = Int
 
+//enum class Side(val value: Int) {
+//    LEFT(ConstraintLayout.LayoutParams.LEFT),
+//    RIGHT(ConstraintLayout.LayoutParams.RIGHT),
+//    TOP(ConstraintLayout.LayoutParams.TOP),
+//    BOTTOM(ConstraintLayout.LayoutParams.BOTTOM),
+//    BASELINE(ConstraintLayout.LayoutParams.BASELINE),
+//    START(ConstraintLayout.LayoutParams.START),
+//    END(ConstraintLayout.LayoutParams.END)
+//}
+//
+//enum class SideSide(val start: Side, val end: Side) {
+//    LEFTS(Side.LEFT, Side.LEFT),
+//    RIGHTS(Side.RIGHT, Side.RIGHT),
+//    TOPS(Side.TOP, Side.TOP),
+//    BOTTOMS(Side.BOTTOM, Side.BOTTOM),
+//    BASELINES(Side.BASELINE, Side.BASELINE),
+//    STARTS(Side.START, Side.START),
+//    ENDS(Side.END, Side.END),
+//    HORIZONTAL(SideSide(-1, -1)),
+//    VERTICAL(SideSide(-2, -2)),
+//    ALL(SideSide(-3, -3)),
+//}
 
 /**
  * @author David Khol [david.khol@ackee.cz]
@@ -94,13 +116,34 @@ open class _ConstraintSet : ConstraintSet() {
         }
     }
 
-    open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType, init: Chain.() -> Unit) {
+    /**
+    You can define chains like this:
+    ```
+constraints {
+    ...
+    chain(TOP of viewOne, BOTTOM of viewTwo, CHAIN_SPREAD) {
+        // You should either use views() or viewIds() functions to define elements of the chain
+        views(viewThree, viewFour, viewFive)
+
+        // Optionally you can also define weights to mimic functionality of LinearLayout and it's weights
+        weights(2f, 1f, 1f)
+    }
+}
+    ```
+     */
+    open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType = CHAIN_SPREAD, init: Chain.() -> Unit) {
         val horizontal = listOf(LEFT, RIGHT)
         val vertical = listOf(TOP, BOTTOM)
         val horizontalRtl = listOf(START, END)
 
         val chain = Chain()
         chain.init()
+
+
+        if (chain.weights != null && chainType == CHAIN_PACKED) {
+            throw IllegalArgumentException("You may not use weights together with chainType CHAIN_PACKED")
+        }
+        // TODO: 9. 9. 2017 david.khol: throw an exception when no view in the chain defines match_constraint
 
         if (begin.side in horizontal && end.side in horizontal) {
             createHorizontalChain(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
@@ -121,9 +164,16 @@ open class _ConstraintSet : ConstraintSet() {
         }
     }
 
+    fun Int.connect(vararg connections: SideSideViewId) {
+        this.connectInternal(*connections)
+    }
+
     fun View.connect(vararg connections: SideSideViewId) {
         generateId()
+        this.id.connectInternal(*connections)
+    }
 
+    private fun Int.connectInternal(vararg connections: SideSideViewId) {
         connections.forEach {
             val sides = it.sides
             val endId = it.viewId
@@ -131,119 +181,134 @@ open class _ConstraintSet : ConstraintSet() {
             if (it is SideSideViewIdMargin) {
                 val margin = it.margin
                 when (sides) {
-                    HORIZONTAL -> connectHorizontal(this.id, endId, margin)
-                    VERTICAL -> connectVertical(this.id, endId, margin)
-                    ALL -> connectAll(this.id, endId, margin)
-                    else -> connect(sides.start of this.id, sides.end of endId, margin)
+                    HORIZONTAL -> connectHorizontal(this, endId, margin)
+                    VERTICAL -> connectVertical(this, endId, margin)
+                    ALL -> connectAll(this, endId, margin)
+                    else -> connect(sides.start of this, sides.end of endId, margin)
                 }
             } else {
                 when (sides) {
-                    HORIZONTAL -> connectHorizontal(this.id, endId)
-                    VERTICAL -> connectVertical(this.id, endId)
-                    ALL -> connectAll(this.id, endId)
-                    else -> connect(sides.start of this.id, sides.end of endId)
+                    HORIZONTAL -> connectHorizontal(this, endId)
+                    VERTICAL -> connectVertical(this, endId)
+                    ALL -> connectAll(this, endId)
+                    else -> connect(sides.start of this, sides.end of endId)
                 }
             }
         }
     }
 
-
     //<editor-fold desc="<< connect() overloads >>">
+    /**
+     * Generates a unique ID for a view. This might be useful when we need to define ids for views
+     * used in constraint layout to define constraints.
+     * Warning: Don't rely on this function for views which should persist their state. Views will
+     * get assigned a new generated ID after a configuration change and thus automatic instance
+     * state restore won't work properly.
+     */
     private fun View.generateId(): Int {
-        if (generateIds && id == 0) {
+        if (generateIds && id == View.NO_ID) {
             id = newId()
         }
         return id
     }
 
-    /**
-     * Generates a unique ID for a view.
-     * Warning: Don't rely on this function for views which should persist their state. There is
-     * no guarantee that the same view will get the same generated ID after a configuration change.
-     */
-    private fun generateIds(vararg views: View) {
-        if (generateIds) {
-            views.forEach {
-                it.generateId()
-            }
-        }
-    }
-
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side) {
-        generateIds(start, end)
+        start.generateId()
+        end.generateId()
         connect(start.id, startSide, end.id, endSide)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side, margin: Int) {
-        generateIds(start, end)
+        start.generateId()
+        end.generateId()
         connect(start.id, startSide, end.id, endSide, margin)
     }
 
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId)"))
     fun connect(start: View, startSide: Side, endId: Int, endSide: Side) {
-        generateIds(start)
+        start.generateId()
         connect(start.id, startSide, endId, endSide)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId with margin)"))
     fun connect(start: View, startSide: Side, endId: Int, endSide: Side, margin: Int) {
-        generateIds(start)
+        start.generateId()
         connect(start.id, startSide, endId, endSide, margin)
     }
 
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(startId: Int, startSide: Side, end: View, endSide: Side) {
-        generateIds(end)
+        end.generateId()
         connect(startId, startSide, end.id, endSide)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(startId: Int, startSide: Side, end: View, endSide: Side, margin: Int) {
-        generateIds(end)
+        end.generateId()
         connect(startId, startSide, end.id, endSide, margin)
     }
 
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(start: SideViewId, end: SideViewId) {
         connect(start.viewId, start.side, end.viewId, end.side)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(start: SideViewId, end: SideViewId, margin: Int) {
         connect(start.viewId, start.side, end.viewId, end.side, margin)
     }
+
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(con: SideViewSideView) {
         // ids are generated in the delegated function
         connect(con.from.view, con.from.side, con.to.view, con.to.side)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(con: SideViewSideView, margin: Int) {
         // ids are generated in the delegated function
         connect(con.from.view, con.from.side, con.to.view, con.to.side, margin)
     }
-    //</editor-fold>
 
-    //<editor-fold desc="<< connect***() overloads>>">
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId)"))
     fun connectBaseline(viewId: ViewId, targetId: ViewId) {
         connect(viewId, BASELINE, targetId, BASELINE)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId with margin)"))
     private fun connectBaseline(viewId: ViewId, targetId: ViewId, margin: Int) {
         Log.w(TAG, "Baseline connection cannot define margin. Check your definition.")
         connectBaseline(viewId, targetId)
     }
+
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(HORIZONTAL of targetId)"))
     fun connectHorizontal(viewId: ViewId, targetId: ViewId) {
         connect(viewId, START, targetId, START)
         connect(viewId, LEFT, targetId, LEFT)
         connect(viewId, END, targetId, END)
         connect(viewId, RIGHT, targetId, RIGHT)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(HORIZONTAL of targetId with margin)"))
     fun connectHorizontal(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, START, targetId, START, margin)
         connect(viewId, LEFT, targetId, LEFT, margin)
         connect(viewId, END, targetId, END, margin)
         connect(viewId, RIGHT, targetId, RIGHT, margin)
     }
+
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERTICAL of targetId)"))
     fun connectVertical(viewId: ViewId, targetId: ViewId) {
         connect(viewId, TOP, targetId, TOP)
         connect(viewId, BOTTOM, targetId, BOTTOM)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERICAL of targetId with margin)"))
     fun connectVertical(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, TOP, targetId, TOP, margin)
         connect(viewId, BOTTOM, targetId, BOTTOM, margin)
     }
+
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(ALL of targetId)"))
     fun connectAll(viewId: ViewId, targetId: ViewId) {
         connectVertical(viewId, targetId)
         connectHorizontal(viewId, targetId)
     }
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(ALL of targetId with margin)"))
     fun connectAll(viewId: ViewId, targetId: ViewId, margin: Int) {
         connectVertical(viewId, targetId, margin)
         connectHorizontal(viewId, targetId, margin)

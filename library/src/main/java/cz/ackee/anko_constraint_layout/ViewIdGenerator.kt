@@ -24,20 +24,31 @@ import java.util.concurrent.atomic.AtomicInteger
  * @since 25. 8. 2017
  **/
 object ViewIdGenerator {
-    private val sNextGeneratedId = AtomicInteger(1)
 
     /**
-     * This function is copied from stack overflow
+     * Users may set their own implementation of idGenerator to eliminate problem with multiple
+     * libraries using separate counters for generating new IDs
      */
+    val idGeneratorImplementation: () -> Int = this::ourImplementation
+
+
+    // generates a unique id every time this function is called
     fun newId(): Int {
+        return idGeneratorImplementation()
+    }
+
+
+    private val nextIdGenerator = AtomicInteger(1)
+
+    private fun ourImplementation(): Int {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             while (true) {
-                val result = sNextGeneratedId.get()
+                val result = nextIdGenerator.get()
                 // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
                 var newValue = result + 1
                 if (newValue > 0x00FFFFFF)
                     newValue = 1 // Roll over to 1, not 0.
-                if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                if (nextIdGenerator.compareAndSet(result, newValue)) {
                     return result
                 }
             }
