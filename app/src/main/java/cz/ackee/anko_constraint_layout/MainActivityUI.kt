@@ -14,8 +14,8 @@ import org.jetbrains.anko.*
  **/
 class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
-    lateinit var constraints1: ConstraintSet
-    lateinit var constraints2: ConstraintSet
+    private lateinit var constraints1: ConstraintSet
+    private lateinit var constraints2: ConstraintSet
 
     override fun create(ui: AnkoContext<MainActivity>): View {
         return ui.constraintLayout {
@@ -53,7 +53,7 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                 }
             }
 
-            constraints1 = constraints(generateIds = true) {
+            constraints1 = constraints {
 
                 val centerGuideId: Int = verticalGuidelinePercent(0.5f)
 

@@ -29,7 +29,7 @@ object ViewIdGenerator {
      * Users may set their own implementation of idGenerator to eliminate problem with multiple
      * libraries using separate counters for generating new IDs
      */
-    val idGeneratorImplementation: () -> Int = this::ourImplementation
+    var idGeneratorImplementation: () -> Int = this::ourImplementation
 
 
     // generates a unique id every time this function is called
@@ -40,7 +40,7 @@ object ViewIdGenerator {
 
     private val nextIdGenerator = AtomicInteger(1)
 
-    private fun ourImplementation(): Int {
+    fun ourImplementation(): Int {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             while (true) {
                 val result = nextIdGenerator.get()
