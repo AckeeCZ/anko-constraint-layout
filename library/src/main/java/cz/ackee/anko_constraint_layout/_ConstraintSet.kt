@@ -45,8 +45,6 @@ open class _ConstraintSet : ConstraintSet() {
     private val TAG: String = javaClass.simpleName
     private val UNDEFINED = Int.MAX_VALUE
 
-    var generateIds: Boolean = true
-
     val parentId: ViewId = ConstraintLayout.LayoutParams.PARENT_ID
 
     val MATCH_CONSTRAINT_WRAP = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_WRAP
@@ -106,7 +104,7 @@ open class _ConstraintSet : ConstraintSet() {
         open var weights: FloatArray? = null
 
         open fun views(vararg views: View) {
-            this.viewIds = views.map { it.generateId() }.toIntArray()
+            this.viewIds = views.map { it.id }.toIntArray()
         }
         open fun viewIds(vararg viewIds: ViewId) {
             this.viewIds = viewIds
@@ -158,22 +156,21 @@ constraints {
     //</editor-fold>
 
 
-    fun View.reset(vararg sides: Side) {
+    fun View.clear() {
+        super.clear(this.id)
+    }
+
+    fun View.clear(vararg sides: Side) {
         sides.forEach {
-            clear(this.id, it)
+            super.clear(this.id, it)
         }
     }
 
-    fun Int.connect(vararg connections: SideSideViewId) {
-        this.connectInternal(*connections)
-    }
-
     fun View.connect(vararg connections: SideSideViewId) {
-        generateId()
-        this.id.connectInternal(*connections)
+        this.id.connect(*connections)
     }
 
-    private fun Int.connectInternal(vararg connections: SideSideViewId) {
+    fun Int.connect(vararg connections: SideSideViewId) {
         connections.forEach {
             val sides = it.sides
             val endId = it.viewId
@@ -198,52 +195,31 @@ constraints {
     }
 
     //<editor-fold desc="<< connect() overloads >>">
-    /**
-     * Generates a unique ID for a view. This might be useful when we need to define ids for views
-     * used in constraint layout to define constraints.
-     * Warning: Don't rely on this function for views which should persist their state. Views will
-     * get assigned a new generated ID after a configuration change and thus automatic instance
-     * state restore won't work properly.
-     */
-    private fun View.generateId(): Int {
-        if (generateIds && id == View.NO_ID) {
-            id = newId()
-        }
-        return id
-    }
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side) {
-        start.generateId()
-        end.generateId()
         connect(start.id, startSide, end.id, endSide)
     }
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side, margin: Int) {
-        start.generateId()
-        end.generateId()
         connect(start.id, startSide, end.id, endSide, margin)
     }
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId)"))
     fun connect(start: View, startSide: Side, endId: Int, endSide: Side) {
-        start.generateId()
         connect(start.id, startSide, endId, endSide)
     }
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId with margin)"))
     fun connect(start: View, startSide: Side, endId: Int, endSide: Side, margin: Int) {
-        start.generateId()
         connect(start.id, startSide, endId, endSide, margin)
     }
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(startId: Int, startSide: Side, end: View, endSide: Side) {
-        end.generateId()
         connect(startId, startSide, end.id, endSide)
     }
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(startId: Int, startSide: Side, end: View, endSide: Side, margin: Int) {
-        end.generateId()
         connect(startId, startSide, end.id, endSide, margin)
     }
 
@@ -258,12 +234,10 @@ constraints {
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(con: SideViewSideView) {
-        // ids are generated in the delegated function
         connect(con.from.view, con.from.side, con.to.view, con.to.side)
     }
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(con: SideViewSideView, margin: Int) {
-        // ids are generated in the delegated function
         connect(con.from.view, con.from.side, con.to.view, con.to.side, margin)
     }
 
@@ -315,7 +289,7 @@ constraints {
     }
     //</editor-fold>
 
-    open inner class SideView(side: Side, val view: View) : SideViewId(side, view.generateId())
+    open inner class SideView(side: Side, val view: View) : SideViewId(side, view.id)
     open inner class SideViewId(val side: Side, val viewId: ViewId)
     open inner class SideViewSide(val sideView: SideView, side: Side) : SideViewIdSide(sideView, side)
     open inner class SideViewIdSide(val sideViewId: SideViewId, val side: Side)
@@ -336,7 +310,7 @@ constraints {
 
     // SideSide* classes are used in view.connect(vararg) methods
     open inner class SideSide(val start: Side, val end: Side)
-    open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.generateId())
+    open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id)
     open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
     open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int): SideSideViewId(sides, viewId)
 

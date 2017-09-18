@@ -61,10 +61,41 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     // TODO: percent dimensions
 
 
-    inline fun constraints(generateIds: Boolean = true, init: _ConstraintSet.() -> Unit): _ConstraintSet {
+    var generateIds = true
+
+    /**
+     * Generates a unique ID for a view. This might be useful when we need to define ids for views
+     * used in constraint layout to define constraints.
+     * Warning: Don't rely on this function for views which should persist their state. Views will
+     * get assigned a new generated ID after a configuration change and thus automatic instance
+     * state restore won't work properly.
+     */
+    private fun View.generateId(): Int {
+        if (id == View.NO_ID) {
+            id = ViewIdGenerator.newId()
+        }
+        return id
+    }
+
+    /**
+     * WARNING: Do not set child view id after it has been added to the constraint layout
+     */
+    override fun onViewAdded(view: View) {
+        // The constraint layout stores references through view ids and when the view's id gets
+        // updated, constraint layout won't be able to find it anymore through the new id.
+        // To fight this, update the newly added view's id before the constraint layout stores
+        // the reference of the view.
+        // Note: Other possible way to resolve this issue is to remove the view, change view's id
+        // and add the view again.
+        if (generateIds) {
+            view.generateId()
+        }
+        super.onViewAdded(view)
+    }
+
+    inline fun constraints(init: _ConstraintSet.() -> Unit): _ConstraintSet {
         val constraintSet = _ConstraintSet()
         constraintSet.clone(this)
-        constraintSet.generateIds = generateIds
         constraintSet.init()
         constraintSet.applyTo(this)
         return constraintSet

@@ -28,7 +28,6 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                 matchConstraintPercentHeight = 1f
             }
 
-
             val name = defaultTextView("Joe") {
                 textSize = 20f
             }
@@ -53,50 +52,58 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                 }
             }
 
+            val group: Group = this.group(name, surname)
+            group.visibility = View.VISIBLE
+
             constraints1 = constraints {
 
                 val centerGuideId: Int = verticalGuidelinePercent(0.5f)
 
-                name.connect(   STARTS of parentId with 16.dp,
-                                TOPS of parentId with 16.dp)
-
-                surname.connect(TOP to BOTTOM of name,
-                                STARTS of name)
-
-                age.connect(    START to END of surname with 8.dp,
-                                BASELINES of surname)
-
-                button.connect( RIGHTS of image,
-                                TOP to BOTTOM of image)
-
-                image.connect(  RIGHTS of centerGuideId,
-                                TOPS of parentId,
-                                LEFTS of parentId)
+                name.connect(
+                        STARTS of parentId with 16.dp,
+                        TOPS of parentId with 16.dp
+                )
+                surname.connect(
+                        TOP to BOTTOM of name,
+                        STARTS of name
+                )
+                age.connect(
+                        START to END of surname with 8.dp,
+                        BASELINES of surname
+                )
+                button.connect(
+                        ENDS of image,
+                        TOP to BOTTOM of image
+                )
+                image.connect(
+                        RIGHTS of centerGuideId,
+                        TOPS of parentId,
+                        LEFTS of parentId
+                )
             }
-
-            val group: Group = this.group(name, surname)
-            group.visibility = View.VISIBLE
 
             constraints2 = constraints {
                 val leftGuideId: Int = verticalGuidelineBegin(72.dp)
                 val rightGuideId: Int = verticalGuidelinePercent(0.8f)
 
-                chain(TOP of parentId, BOTTOM of parentId, CHAIN_PACKED) {
-                    views(name, surname, button)
-                }
-
-                name.connect(   START to START of leftGuideId,
-                                TOPS of parentId with 32.dp)
-
-                surname.connect(HORIZONTAL of name)
-
-                button.reset(BOTTOM)
-                button.connect( HORIZONTAL of rightGuideId,
-                                TOPS of parentId with 128.dp)
-
-                image.reset(TOP)
-                image.connect(  HORIZONTAL of parentId,
-                                BOTTOMS of parentId)
+                name.connect(
+                        STARTS of leftGuideId,
+                        TOPS of parentId with 32.dp
+                )
+                surname.connect(
+                        TOP to BOTTOM of name,
+                        HORIZONTAL of name
+                )
+                button.clear(BOTTOM)
+                button.connect(
+                        HORIZONTAL of rightGuideId,
+                        TOPS of parentId with 128.dp
+                )
+                image.clear(TOP)
+                image.connect(
+                        HORIZONTAL of parentId,
+                        BOTTOMS of parentId
+                )
             }
         }
     }
