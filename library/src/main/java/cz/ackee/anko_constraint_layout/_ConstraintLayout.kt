@@ -54,13 +54,18 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
     val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
 
+//    TODO: placeholders
+//    TODO: percent dimensions {
+//        android:layout_width="0dp"
+//        app:layout_constraintWidth_default="percent"
+//        app:layout_constraintWidth_percent=".4"
+//        matchConstraintPercentHeight - only as layout parameter, not available in ConstraintSet
+//    }
 
-    // TODO: placeholders
-    // TODO: chains
-    // TODO: aspect ratio
-    // TODO: percent dimensions
 
-
+    /**
+     * WARNING: Do not set child view id after it has been added to the constraint layout
+     */
     var generateIds = true
 
     /**
@@ -70,25 +75,18 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
      * get assigned a new generated ID after a configuration change and thus automatic instance
      * state restore won't work properly.
      */
-    private fun View.generateId(): Int {
-        if (id == View.NO_ID) {
-            id = ViewIdGenerator.newId()
-        }
-        return id
-    }
-
-    /**
-     * WARNING: Do not set child view id after it has been added to the constraint layout
-     */
     override fun onViewAdded(view: View) {
         // The constraint layout stores references through view ids and when the view's id gets
         // updated, constraint layout won't be able to find it anymore through the new id.
         // To fight this, update the newly added view's id before the constraint layout stores
         // the reference of the view.
-        // Note: Other possible way to resolve this issue is to remove the view, change view's id
-        // and add the view again.
+        // (Another possible way to resolve this issue is to remove the view, change view's id
+        // and add the view again. Doing so might cause rendering problems though. Order of views
+        // being rendered might change.)
         if (generateIds) {
-            view.generateId()
+            if (id == View.NO_ID) {
+                id = ViewIdGenerator.newId()
+            }
         }
         super.onViewAdded(view)
     }

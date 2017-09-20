@@ -30,20 +30,19 @@ typealias ChainType = Int
 //    BASELINES(Side.BASELINE, Side.BASELINE),
 //    STARTS(Side.START, Side.START),
 //    ENDS(Side.END, Side.END),
-//    HORIZONTAL(SideSide(-1, -1)),
-//    VERTICAL(SideSide(-2, -2)),
-//    ALL(SideSide(-3, -3)),
+//    HORIZONTAL(Side(-1), Side(-1)),
+//    VERTICAL(Side(-2), Side(-2)),
+//    ALL(Side(-3), Side(-3)),
 //}
 
 /**
  * @author David Khol [david.khol@ackee.cz]
  * @since 16.8.2017
  **/
-@Suppress("MemberVisibilityCanPrivate", "unused")
+@Suppress("MemberVisibilityCanPrivate", "unused", "NOTHING_TO_INLINE")
 open class _ConstraintSet : ConstraintSet() {
 
     private val TAG: String = javaClass.simpleName
-    private val UNDEFINED = Int.MAX_VALUE
 
     val parentId: ViewId = ConstraintLayout.LayoutParams.PARENT_ID
 
@@ -115,19 +114,19 @@ open class _ConstraintSet : ConstraintSet() {
     }
 
     /**
-    You can define chains like this:
-    ```
-constraints {
-    ...
-    chain(TOP of viewOne, BOTTOM of viewTwo, CHAIN_SPREAD) {
-        // You should either use views() or viewIds() functions to define elements of the chain
-        views(viewThree, viewFour, viewFive)
-
-        // Optionally you can also define weights to mimic functionality of LinearLayout and it's weights
-        weights(2f, 1f, 1f)
-    }
-}
-    ```
+     * Sample usage:
+     * ```
+     * constraints {
+     *     ...
+     *     chain(TOP of viewOne, BOTTOM of viewTwo, CHAIN_SPREAD) {
+     *         // You should either use views() or viewIds() functions to define elements of the chain
+     *         views(viewThree, viewFour, viewFive)
+     *
+     *         // Optionally you can also define weights to mimic functionality of LinearLayout and it's weights
+     *         weights(2f, 1f, 1f)
+     *     }
+     * }
+     * ```
      */
     open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType = CHAIN_SPREAD, init: Chain.() -> Unit) {
         val horizontal = listOf(LEFT, RIGHT)
@@ -136,7 +135,6 @@ constraints {
 
         val chain = Chain()
         chain.init()
-
 
         if (chain.weights != null && chainType == CHAIN_PACKED) {
             throw IllegalArgumentException("You may not use weights together with chainType CHAIN_PACKED")
@@ -167,10 +165,6 @@ constraints {
     }
 
     fun View.connect(vararg connections: SideSideViewId) {
-        this.id.connect(*connections)
-    }
-
-    fun Int.connect(vararg connections: SideSideViewId) {
         connections.forEach {
             val sides = it.sides
             val endId = it.viewId
@@ -178,73 +172,132 @@ constraints {
             if (it is SideSideViewIdMargin) {
                 val margin = it.margin
                 when (sides) {
-                    HORIZONTAL -> connectHorizontal(this, endId, margin)
-                    VERTICAL -> connectVertical(this, endId, margin)
-                    ALL -> connectAll(this, endId, margin)
-                    else -> connect(sides.start of this, sides.end of endId, margin)
+                    HORIZONTAL -> connectHorizontal(this.id, endId, margin)
+                    VERTICAL -> connectVertical(this.id, endId, margin)
+                    ALL -> connectAll(this.id, endId, margin)
+                    else -> connect(sides.start of this.id, sides.end of endId, margin)
                 }
             } else {
                 when (sides) {
-                    HORIZONTAL -> connectHorizontal(this, endId)
-                    VERTICAL -> connectVertical(this, endId)
-                    ALL -> connectAll(this, endId)
-                    else -> connect(sides.start of this, sides.end of endId)
+                    HORIZONTAL -> connectHorizontal(this.id, endId)
+                    VERTICAL -> connectVertical(this.id, endId)
+                    ALL -> connectAll(this.id, endId)
+                    else -> connect(sides.start of this.id, sides.end of endId)
                 }
             }
         }
     }
 
+    /**
+     * Sample usage:
+     * ```
+     * view.center(LEFT of parentId with 16.dp, RIGHT of parentId with 16.dp, 0.2f)
+     * ```
+     */
+    fun View.center(first: SideViewId, second: SideViewId, bias: Float = 0.5F) {
+        val horizontal = listOf(LEFT, RIGHT)
+        val vertical = listOf(TOP, BOTTOM)
+        val horizontalRtl = listOf(START, END)
+
+        val firstViewId = first.viewId
+        val secondViewId = second.viewId
+
+        val firstSide = first.side
+        val secondSide = second.side
+
+        val firstMargin = (first as? SideViewIdMargin)?.margin ?: 0
+        val secondMargin = (second as? SideViewIdMargin)?.margin ?: 0
+
+        if (firstSide in horizontal && secondSide in horizontal) {
+            centerHorizontally(this.id,
+                    firstViewId, firstSide, firstMargin,
+                    secondViewId, secondSide, secondMargin,
+                    bias)
+        } else if (firstSide in vertical && secondSide in vertical) {
+            centerVertically(this.id,
+                    firstViewId, firstSide, firstMargin,
+                    secondViewId, secondSide, secondMargin,
+                    bias)
+        } else if (firstSide in horizontalRtl && secondSide in horizontalRtl) {
+            centerHorizontallyRtl(this.id,
+                    firstViewId, firstSide, firstMargin,
+                    secondViewId, secondSide, secondMargin,
+                    bias)
+        } else {
+            throw IllegalArgumentException("Cannot center a view for supplied sides: $firstSide together with $secondSide")
+        }
+    }
+
+    inline fun View.width(width: Int) = constrainWidth(this.id, width)
+    inline fun View.maxWidth(width: Int) = constrainMaxWidth(this.id, width)
+    inline fun View.minWidth(width: Int) = constrainMinWidth(this.id, width)
+    inline fun View.defaultWidth(width: Int) = constrainDefaultWidth(this.id, width)
+
+    inline fun View.height(height: Int) = constrainHeight(this.id, height)
+    inline fun View.maxHeight(height: Int) = constrainMaxHeight(this.id, height)
+    inline fun View.minHeight(height: Int) = constrainMinHeight(this.id, height)
+    inline fun View.defaultHeight(height: Int) = constrainDefaultHeight(this.id, height)
+
+    inline fun View.horizontalBias(bias: Float) = setHorizontalBias(this.id, bias)
+    inline fun View.verticalBias(bias: Float) = setVerticalBias(this.id, bias)
+
+    inline fun View.margin(anchor: Int, value: Int) = setMargin(this.id, anchor, value)
+    inline fun View.goneMargin(anchor: Int, value: Int) = setGoneMargin(this.id, anchor, value)
+
+    inline fun View.aspectRatio(ratio: String) = dimensionRatio(ratio)
+    inline fun View.dimensionRatio(ratio: String) = setDimensionRatio(this.id, ratio)
+
+    inline fun View.visibility(visibility: Int) = setVisibility(this.id, visibility)
+
+    inline fun View.alpha(alpha: Float) = setAlpha(this.id, alpha)
+
+
+//    fun View.rotate(rotation: Float) {
+//        setRotation(this.id, rotation)
+//        setRotationX(this.id, rotation)
+//        setRotationY(this.id, rotation)
+//    }
+//
+//    fun View.scale(scale: Float) {
+//        setScaleX(this.id, scale)
+//        setScaleY(this.id, scale)
+//    }
+//
+//    fun View.transformPivot(x: Float, y: Float) {
+//        setTransformPivot(this.id, x, y)
+//        setTransformPivotX(this.id, x)
+//        setTransformPivotY(this.id, y)
+//    }
+
     //<editor-fold desc="<< connect() overloads >>">
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(start: View, startSide: Side, end: View, endSide: Side) {
-        connect(start.id, startSide, end.id, endSide)
-    }
+    fun connect(start: View, startSide: Side, end: View, endSide: Side) = connect(start.id, startSide, end.id, endSide)
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(start: View, startSide: Side, end: View, endSide: Side, margin: Int) {
-        connect(start.id, startSide, end.id, endSide, margin)
-    }
+    fun connect(start: View, startSide: Side, end: View, endSide: Side, margin: Int) = connect(start.id, startSide, end.id, endSide, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId)"))
-    fun connect(start: View, startSide: Side, endId: Int, endSide: Side) {
-        connect(start.id, startSide, endId, endSide)
-    }
+    fun connect(start: View, startSide: Side, endId: Int, endSide: Side) = connect(start.id, startSide, endId, endSide)
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId with margin)"))
-    fun connect(start: View, startSide: Side, endId: Int, endSide: Side, margin: Int) {
-        connect(start.id, startSide, endId, endSide, margin)
-    }
+    fun connect(start: View, startSide: Side, endId: Int, endSide: Side, margin: Int) = connect(start.id, startSide, endId, endSide, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(startId: Int, startSide: Side, end: View, endSide: Side) {
-        connect(startId, startSide, end.id, endSide)
-    }
+    fun connect(startId: Int, startSide: Side, end: View, endSide: Side) = connect(startId, startSide, end.id, endSide)
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(startId: Int, startSide: Side, end: View, endSide: Side, margin: Int) {
-        connect(startId, startSide, end.id, endSide, margin)
-    }
+    fun connect(startId: Int, startSide: Side, end: View, endSide: Side, margin: Int) = connect(startId, startSide, end.id, endSide, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(start: SideViewId, end: SideViewId) {
-        connect(start.viewId, start.side, end.viewId, end.side)
-    }
+    fun connect(start: SideViewId, end: SideViewId) = connect(start.viewId, start.side, end.viewId, end.side)
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(start: SideViewId, end: SideViewId, margin: Int) {
-        connect(start.viewId, start.side, end.viewId, end.side, margin)
-    }
+    fun connect(start: SideViewId, end: SideViewId, margin: Int) = connect(start.viewId, start.side, end.viewId, end.side, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(con: SideViewSideView) {
-        connect(con.from.view, con.from.side, con.to.view, con.to.side)
-    }
+    fun connect(con: SideViewSideView) = connect(con.from.view, con.from.side, con.to.view, con.to.side)
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(con: SideViewSideView, margin: Int) {
-        connect(con.from.view, con.from.side, con.to.view, con.to.side, margin)
-    }
+    fun connect(con: SideViewSideView, margin: Int) = connect(con.from.view, con.from.side, con.to.view, con.to.side, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId)"))
-    fun connectBaseline(viewId: ViewId, targetId: ViewId) {
-        connect(viewId, BASELINE, targetId, BASELINE)
-    }
+    fun connectBaseline(viewId: ViewId, targetId: ViewId) = connect(viewId, BASELINE, targetId, BASELINE)
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId with margin)"))
     private fun connectBaseline(viewId: ViewId, targetId: ViewId, margin: Int) {
         Log.w(TAG, "Baseline connection cannot define margin. Check your definition.")
@@ -297,28 +350,31 @@ constraints {
     open inner class SideViewSideViewId(val from: SideView, val toId: SideViewId)
     open inner class SideViewIdSideView(val from: SideViewId, val to: SideView) : SideViewIdSideViewId(from, to)
     open inner class SideViewIdSideViewId(val fromId: SideViewId, val toId: SideViewId)
+    open inner class SideViewMargin(sideView: SideView, margin: Int) : SideViewIdMargin(sideView, margin)
+    open inner class SideViewIdMargin(sideViewId: SideViewId, val margin: Int) : SideViewId(sideViewId.side, sideViewId.viewId)
 
-    infix fun Side.of(view: View) = SideView(this, view)
-    infix fun Side.of(viewId: ViewId) = SideViewId(this, viewId)
-    infix fun SideView.to(side: Side) = SideViewSide(this, side)
-    infix fun SideViewId.to(side: Side) = SideViewIdSide(this, side)
-    infix fun SideViewSide.of(view: View) = SideViewSideView(sideView, SideView(side, view))
-    infix fun SideViewSide.of(viewId: ViewId) = SideViewSideViewId(sideView, SideViewId(side, viewId))
-    infix fun SideViewIdSide.of(view: View) = SideViewIdSideView(sideViewId, SideView(side, view))
-    infix fun SideViewIdSide.of(viewId: ViewId) = SideViewIdSideViewId(sideViewId, SideViewId(side, viewId))
+    infix inline fun Side.of(view: View) = SideView(this, view)
+    infix inline fun Side.of(viewId: ViewId) = SideViewId(this, viewId)
+    infix inline fun SideView.to(side: Side) = SideViewSide(this, side)
+    infix inline fun SideViewId.to(side: Side) = SideViewIdSide(this, side)
+    infix inline fun SideViewSide.of(view: View) = SideViewSideView(sideView, SideView(side, view))
+    infix inline fun SideViewSide.of(viewId: ViewId) = SideViewSideViewId(sideView, SideViewId(side, viewId))
+    infix inline fun SideViewIdSide.of(view: View) = SideViewIdSideView(sideViewId, SideView(side, view))
+    infix inline fun SideViewIdSide.of(viewId: ViewId) = SideViewIdSideViewId(sideViewId, SideViewId(side, viewId))
+    infix inline fun SideView.with(margin: Int) = SideViewMargin(this, margin)
+    infix inline fun SideViewId.with(margin: Int) = SideViewIdMargin(this, margin)
 
-
-    // SideSide* classes are used in view.connect(vararg) methods
     open inner class SideSide(val start: Side, val end: Side)
     open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id)
     open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
+    open inner class SideSideViewMargin(sides: SideSide, view: View, margin: Int): SideSideViewIdMargin(sides, view.id, margin)
     open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int): SideSideViewId(sides, viewId)
 
-    infix fun Side.to(side: Side) = SideSide(this, side)
-    infix fun SideSide.of(view: View) = SideSideView(this, view)
-    infix fun SideSide.of(viewId: ViewId) = SideSideViewId(this, viewId)
-    infix fun SideSideView.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
-    infix fun SideSideViewId.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
+    infix inline fun Side.to(side: Side) = SideSide(this, side)
+    infix inline fun SideSide.of(view: View) = SideSideView(this, view)
+    infix inline fun SideSide.of(viewId: ViewId) = SideSideViewId(this, viewId)
+    infix inline fun SideSideView.with(margin: Int) = SideSideViewMargin(sides, view, margin)
+    infix inline fun SideSideViewId.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
 
 }
 
