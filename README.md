@@ -76,10 +76,11 @@ constraints {
 
 ```SIDE to SIDE of VIEW [with MARGIN]``` 
 * First `SIDE` defines side of the view we create constraints for. 
-* Second `SIDE` defines side of the view we connect first view to. 
+* Second `SIDE` defines side of the view we connect first view to.
+* `VIEW` defines the view we connect first view to
 * `with MARGIN` clause is optional and defines from first view to the second one
 
-Available sides are: `LEFT`, `RIGHT`, `TOP`, `BOTTOM`, `BASELINE`, `START`, `END`
+Available `SIDE`s are: `LEFT`, `RIGHT`, `TOP`, `BOTTOM`, `BASELINE`, `START`, `END`
  
 To reduce boilerplate, instead of `START to START` you can just specify `STARTS` etc.
 Additionally you can use `HORIZONTAL` to define `LEFTS` and `RIGHTS` at the same time and 
@@ -103,16 +104,14 @@ When either `chain spread` or `chain spread inside` is used, you can also define
 functionality of `LinearLayout` and it's weights. To make weights work, you also have to set the 
 view's height or width to `match_constraints` (0dp).
 
-For more information about chains, have a look at [this great article](https://medium.com/@nomanr/constraintlayout-chains-4f3b58ea15bb) by Noman Rafique
+For more information about chains, have a look at [this great article](https://medium.com/@nomanr/constraintlayout-chains-4f3b58ea15bb) by Noman Rafique.
 
 ### Dimensions and Ratios
 TODO
 
-```kotlin
-
-```
-
 ### Guidelines
+TODO
+
 ```kotlin
 constraints {
     val leftGuide: Int = verticalGuidelineBegin(dip(16))

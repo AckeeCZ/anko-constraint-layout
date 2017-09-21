@@ -23,9 +23,6 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
             val image = imageView {
                 scaleType = ImageView.ScaleType.CENTER
                 imageResource = R.drawable.nav_header_bg
-            }.lparams(matchConstraint, matchConstraint) {
-                dimensionRatio = "H,16:9"
-                matchConstraintPercentHeight = 1f
             }
 
             val name = defaultTextView("Joe") {
@@ -56,7 +53,6 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
             group.visibility = View.VISIBLE
 
             constraints1 = constraints {
-
                 val centerGuideId: Int = verticalGuidelinePercent(0.5f)
 
                 name.connect(
@@ -75,6 +71,8 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                         ENDS of image,
                         TOP to BOTTOM of image
                 )
+                image.size(matchConstraint, matchConstraint)
+                image.aspectRatio("H,16:9")
                 image.connect(
                         RIGHTS of centerGuideId,
                         TOPS of parentId,
@@ -84,7 +82,7 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
             constraints2 = constraints {
                 val leftGuideId: Int = verticalGuidelineBegin(72.dp)
-                val rightGuideId: Int = verticalGuidelinePercent(0.8f)
+                val rightGuideId: Int = verticalGuidelinePercent(2/3f)
 
                 name.connect(
                         STARTS of leftGuideId,

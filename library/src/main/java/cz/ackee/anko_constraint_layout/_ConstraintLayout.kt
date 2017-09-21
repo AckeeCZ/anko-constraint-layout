@@ -48,8 +48,8 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
         // and add the view again. Doing so might cause rendering problems though. Order of views
         // being rendered might change.)
         if (generateIds) {
-            if (id == View.NO_ID) {
-                id = ViewIdGenerator.newId()
+            if (view.id == View.NO_ID) {
+                view.id = ViewIdGenerator.newId()
             }
         }
         super.onViewAdded(view)

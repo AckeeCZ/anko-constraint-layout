@@ -251,6 +251,23 @@ open class _ConstraintSet : ConstraintSet() {
     inline fun View.minHeight(height: Int) = constrainMinHeight(this.id, height)
     inline fun View.defaultHeight(height: Int) = constrainDefaultHeight(this.id, height)
 
+    inline fun View.size(width: Int, height: Int) {
+        width(width)
+        height(height)
+    }
+    inline fun View.maxSize(width: Int, height: Int) {
+        maxWidth(width)
+        maxHeight(height)
+    }
+    inline fun View.minSize(width: Int, height: Int) {
+        minWidth(width)
+        minHeight(height)
+    }
+    inline fun View.defaultSize(width: Int, height: Int) {
+        defaultWidth(width)
+        defaultHeight(height)
+    }
+
     inline fun View.horizontalBias(bias: Float) = setHorizontalBias(this.id, bias)
     inline fun View.verticalBias(bias: Float) = setVerticalBias(this.id, bias)
 
