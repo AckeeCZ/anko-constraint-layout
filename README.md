@@ -5,6 +5,107 @@ This library adds missing support for Constraint Layout in Anko library.
 
 ## Usage
 
+Constraint Layout is defined and added to other ViewGroups in the same way as any other view in Anko:
+```kotlin
+    anyViewGroupLayout {
+        constraintLayout {
+            val name = textView("David")
+            val surname = textView("Khol")
+        
+            constraints {
+                name.connect(
+                        STARTS of parentId with 16.dp,
+                        TOPS of parentId with 16.dp
+                )
+                surname.connect(
+                        TOP to BOTTOM of name,
+                        STARTS of name
+                )
+            }
+        }.lparams(matchParent, matchParent)
+    }
+```
+or can be created through `ViewManager`, `Context`, `Activity` as usual.
+
+## Views positioning and ConstraintSet
+
+To correctly position all views inside the Constraint Layout, we can set layout params to each child
+it contains as if we were using traditional xml definitions.
+
+When defining layout programmatically, another approach is preferred. Instead of specifying layout
+params for each child, we can specify relations between children through a `ConstraintSet`.
+`ConstraintSet` adds extra helper methods to define constraints more expressively and intuitively.
+
+
+Internally using ConstraintSet. On the topic of managing multiple constraint sets, see [LINK]
+ 
+## Connect
+
+The most common thing to do with Constraint Layout is defining constraints. You can define a constraint
+using `View.connect()` method inside of `constraints` block.
+
+```kotlin
+constraints {
+    name.connect(
+            STARTS of parentId with 16.dp,
+            TOPS of parentId with 16.dp
+    )
+    surname.connect(
+            TOP to BOTTOM of name,
+            STARTS of name
+    )
+    avatar.connect(
+            HORIZONTAL of name,
+            TOP to BOTTOM of name with 8.dp
+    )
+}
+```
+
+`View.connect()` method accepts a list of constraints. Each constraint is defined like this
+```SIDE to SIDE of VIEW [with MARGIN]``` 
+* First `SIDE` defines side of the view we create constraints for. 
+* Second `SIDE` defines side of the view we connect first view to. 
+* `with MARGIN` clause is optional and defines from first view to the second one
+
+Available sides are: `LEFT`, `RIGHT`, `TOP`, `BOTTOM`, `BASELINE`, `START`, `END`
+ 
+To reduce boilerplate, instead of `START to START` you can just specify `STARTS` etc.
+Additionally you can use `HORIZONTAL` to define `LEFTS` and `RIGHTS` at the same time and 
+analogously `VERTICAL` to define `TOPS` and `BOTTOMS`.
+Moreover, you can use `ALL` to define constraints for all four sides at the same time. 
+
+## Chains
+```kotlin
+constraints {
+    chain(TOP of parentId, BOTTOM of parentId) {
+        views(name, surname)
+        weights(1f, 2f)
+    }
+}
+```
+
+## Guidelines
+```kotlin
+constraints {
+    val leftGuide: Int = verticalGuidelineBegin(dip(16))
+}
+```
+
+## Placeholders
+Not yet implemented.
+
+## Percent dimensions
+Not yet implemented.
+
+percent dimensions {
+    android:layout_width="0dp"
+    app:layout_constraintWidth_default="percent"
+    app:layout_constraintWidth_percent=".4"
+}
+
+matchConstraintPercentHeight - only as layout parameter, not available in ConstraintSet
+
+
 ### IDs
 
 Constraint Layout heavily depends on ids of its child views. 
@@ -22,7 +123,7 @@ views usually don't modify their state based on user input. For other views such
 `CheckBox`, `RadiButton`, `SeekBar`, etc. it is strongly advised to specify a static id so that
 Android framework can restore the view's state automatically.
 
-If you want to disable this functionality, you may toggle a generateIds to false.
+If you want to disable this functionality, you may set generateIds to false.
 ```kotlin
 val view = context.constraintLayout {
 
@@ -30,17 +131,17 @@ val view = context.constraintLayout {
     // added views here won't have generated ids
                  
     generateIds = true
-    // added views here will once again have generated ids, unless id has been assigned during its creation
+    // added views here will once again have generated ids, unless id has been assigned during their creation
 }
 ```
 
 Also, do NOT change ids of views after they have been added to the ConstraintLayout. ConstrainLayout
-internally saves references to its views via view's id when it has been added. Changing view's id
+internally stores references to its views via views' id when they have been added. Changing view's id
 and referencing it through its new id will not work and the view will most likely not even get displayed.
 
 ## Sample
 
-Sample app with can be found in `app` module.
+Sample app can be found in `app` module.
 
 ## Dependencies
 
@@ -50,3 +151,10 @@ implementation 'cz.ackee:anko-constraint-layout:0.4.1'
 ```
 
 This library is still in development and your implementation might break when minor version gets bumped up. For now, backwards non-compatible changes happens about once every week. 
+
+##
+For more information about Constraint Layout in general, check out these websites:
+ * [constraintlayout.com](https://constraintlayout.com/)
+ * [developer.android.com/constraint-layout](https://developer.android.com/training/constraint-layout/index.html)
+ * [realm.io/advanced-constraintlayout](https://academy.realm.io/posts/360-andev-2017-nicolas-roard-advanced-constraintlayout/)
+ *

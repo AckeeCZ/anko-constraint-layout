@@ -16,34 +16,6 @@ import org.jetbrains.anko.custom.ankoView
 /**
  * Anko extensions for ConstraintLayout
  *
- *
- * Typical usage of Anko Constraint Layout looks like this:
- *
- * ```
- * val name = textView("Joe")
- * val age = textView("Thompson")
- * val avatar = imageView(R.drawable.ic_avatar)
- * 
- * constraints {
- *     name.connect(
- *         STARTS of parentId with 16.dp,
- *         TOPS of parentId with 16.dp)
- * 
- *     age.connect(
- *         START to END of name with 8.dp,
- *         BASELINES of name)
- * 
- *     avatar.connect(
- *         HORIZONTAL of name,
- *         TOP to BOTTOM of name with 8.dp)
- * }
- * ```
- *
- * For more information about Constraint Layout in general, check out these websites:
- *  - [constraintlayout.com](https://constraintlayout.com/)
- *  - [developer.android.com/constraint-layout](https://developer.android.com/training/constraint-layout/index.html)
- *  - [realm.io/advanced-constraintlayout](https://academy.realm.io/posts/360-andev-2017-nicolas-roard-advanced-constraintlayout/)
- *
  * @author David Khol [david.khol@ackee.cz]
  * @since 9.8.2017
  **/
@@ -54,23 +26,15 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
     val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
 
-//    TODO: placeholders
-//    TODO: percent dimensions {
-//        android:layout_width="0dp"
-//        app:layout_constraintWidth_default="percent"
-//        app:layout_constraintWidth_percent=".4"
-//        matchConstraintPercentHeight - only as layout parameter, not available in ConstraintSet
-//    }
-
-
     /**
-     * WARNING: Do not set child view id after it has been added to the constraint layout
+     * If true, automatically generate unique ids for views added to the constraint layout.
+     * WARNING: Do not manually change child view id after it has been added.
      */
     var generateIds = true
 
     /**
-     * Generates a unique ID for a view. This might be useful when we need to define ids for views
-     * used in constraint layout to define constraints.
+     * Generates unique ID for a view. This is useful when we need to define ids for views
+     * used in constraint layout to create constraints.
      * Warning: Don't rely on this function for views which should persist their state. Views will
      * get assigned a new generated ID after a configuration change and thus automatic instance
      * state restore won't work properly.
@@ -231,5 +195,10 @@ inline fun Context.themedConstraintLayout(theme: Int = 0, init: (@AnkoViewDslMar
 inline fun Activity.constraintLayout(): _ConstraintLayout = constraintLayout {}
 inline fun Activity.constraintLayout(init: (@AnkoViewDslMarker _ConstraintLayout).() -> Unit): _ConstraintLayout {
     return ankoView(::_ConstraintLayout, theme = 0) { init() }
+}
+
+inline fun Activity.themedConstraintLayout(theme: Int = 0): _ConstraintLayout = themedConstraintLayout(theme) {}
+inline fun Activity.themedConstraintLayout(theme: Int = 0, init: (@AnkoViewDslMarker _ConstraintLayout).() -> Unit): _ConstraintLayout {
+    return ankoView(::_ConstraintLayout, theme) { init() }
 }
 //</editor-fold>

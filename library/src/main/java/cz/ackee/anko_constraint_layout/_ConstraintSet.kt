@@ -94,9 +94,7 @@ open class _ConstraintSet : ConstraintSet() {
     //</editor-fold>
 
     //<editor-fold desc="<< Chains definitions >>">
-    // TODO: 3. 9. 2017 david.khol: add more sophisticated chain DSL
     // TODO: 3. 9. 2017 david.khol: add dynamic changing of chain types
-    // TODO: 4. 9. 2017 david.khol: check if provided ids are invalid
 
     open inner class Chain {
         open var viewIds: IntArray = intArrayOf()
@@ -128,7 +126,7 @@ open class _ConstraintSet : ConstraintSet() {
      * }
      * ```
      */
-    open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType = CHAIN_SPREAD, init: Chain.() -> Unit) {
+    open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType, init: Chain.() -> Unit) {
         val horizontal = listOf(LEFT, RIGHT)
         val vertical = listOf(TOP, BOTTOM)
         val horizontalRtl = listOf(START, END)
@@ -136,6 +134,9 @@ open class _ConstraintSet : ConstraintSet() {
         val chain = Chain()
         chain.init()
 
+        if (chain.weights != null && chain.weights!!.size != chain.viewIds.size) {
+            throw IllegalArgumentException("If you define weights, it must contain the same amount of weights as views")
+        }
         if (chain.weights != null && chainType == CHAIN_PACKED) {
             throw IllegalArgumentException("You may not use weights together with chainType CHAIN_PACKED")
         }
@@ -150,6 +151,18 @@ open class _ConstraintSet : ConstraintSet() {
         } else {
             throw IllegalArgumentException("Cannot create a chain for supplied sides: ${begin.side} together with ${end.side}")
         }
+    }
+
+    open fun chainSpread(begin: SideViewId, end: SideViewId, init: Chain.() -> Unit) {
+        chain(begin, end, CHAIN_SPREAD, init)
+    }
+
+    open fun chainSpreadInside(begin: SideViewId, end: SideViewId, init: Chain.() -> Unit) {
+        chain(begin, end, CHAIN_SPREAD_INSIDE, init)
+    }
+
+    open fun chainPacked(begin: SideViewId, end: SideViewId, init: Chain.() -> Unit) {
+        chain(begin, end, CHAIN_PACKED, init)
     }
     //</editor-fold>
 
