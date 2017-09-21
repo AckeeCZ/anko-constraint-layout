@@ -112,7 +112,7 @@ open class _ConstraintSet : ConstraintSet() {
     }
 
     /**
-     * Sample usage:
+     * Creates a chain of views.
      * ```
      * constraints {
      *     ...

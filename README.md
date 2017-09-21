@@ -1,5 +1,4 @@
 # Anko Constraint Layout
-## Purpose of library
 
 This library adds missing support for Constraint Layout in Anko library.
 
@@ -7,42 +6,54 @@ This library adds missing support for Constraint Layout in Anko library.
 
 Constraint Layout is defined and added to other ViewGroups in the same way as any other view in Anko:
 ```kotlin
-    anyViewGroupLayout {
-        constraintLayout {
-            val name = textView("David")
-            val surname = textView("Khol")
-        
-            constraints {
-                name.connect(
-                        STARTS of parentId with 16.dp,
-                        TOPS of parentId with 16.dp
-                )
-                surname.connect(
-                        TOP to BOTTOM of name,
-                        STARTS of name
-                )
-            }
-        }.lparams(matchParent, matchParent)
-    }
+anyViewGroupLayout {
+    constraintLayout {
+        val name = textView("David")
+        val surname = textView("Khol")
+    
+        constraints {
+            name.connect(
+                    STARTS of parentId with 16.dp,
+                    TOPS of parentId with 16.dp
+            )
+            surname.connect(
+                    TOP to BOTTOM of name,
+                    STARTS of name
+            )
+        }
+    }.lparams(matchParent, matchParent)
+}
 ```
-or can be created through `ViewManager`, `Context`, `Activity` as usual.
+or it can be also created through `ViewManager`, `Context`, `Activity` as usual.
 
 ## Views positioning and ConstraintSet
 
 To correctly position all views inside the Constraint Layout, we can set layout params to each child
-it contains as if we were using traditional xml definitions.
+it contains just as if we were using traditional xml definitions.
 
 When defining layout programmatically, another approach is preferred. Instead of specifying layout
 params for each child, we can specify relations between children through a `ConstraintSet`.
 `ConstraintSet` adds extra helper methods to define constraints more expressively and intuitively.
 
+You can create, define constraints into and then apply a Constraint Set to a Constraint Layout 
+using `constraints` block:
 
-Internally using ConstraintSet. On the topic of managing multiple constraint sets, see [LINK]
+```kotlin
+constraintLayout {
+    // view definitions
+    
+    constraints {
+        // view constraint definitions
+    }
+}
+```
+
+Inside of the `constraints` block we can use various methods to define our layout:
  
-## Connect
+### Connect
 
 The most common thing to do with Constraint Layout is defining constraints. You can define a constraint
-using `View.connect()` method inside of `constraints` block.
+using `View.connect()` method.
 
 ```kotlin
 constraints {
@@ -61,7 +72,8 @@ constraints {
 }
 ```
 
-`View.connect()` method accepts a list of constraints. Each constraint is defined like this
+`View.connect()` method accepts variable amount of constraints. Each constraint is defined like this:
+
 ```SIDE to SIDE of VIEW [with MARGIN]``` 
 * First `SIDE` defines side of the view we create constraints for. 
 * Second `SIDE` defines side of the view we connect first view to. 
@@ -74,39 +86,58 @@ Additionally you can use `HORIZONTAL` to define `LEFTS` and `RIGHTS` at the same
 analogously `VERTICAL` to define `TOPS` and `BOTTOMS`.
 Moreover, you can use `ALL` to define constraints for all four sides at the same time. 
 
-## Chains
+### Chains
+You can define [chains](https://developer.android.com/training/constraint-layout/index.html#constrain-chain)
+with `chain()`, `chainSpread()`, `chainSpreadInside()` or `chainPacked()` methods like this: 
+
 ```kotlin
 constraints {
-    chain(TOP of parentId, BOTTOM of parentId) {
+    chainSpread(TOP of parentId, BOTTOM of parentId) {
         views(name, surname)
         weights(1f, 2f)
     }
 }
 ```
+You have to use either views() or viewIds() function to define (at least 2) elements of the chain.
+When either `chain spread` or `chain spread inside` is used, you can also define weights to mimic 
+functionality of `LinearLayout` and it's weights. To make weights work, you also have to set the 
+view's height or width to `match_constraints` (0dp).
 
-## Guidelines
+For more information about chains, have a look at [this great article](https://medium.com/@nomanr/constraintlayout-chains-4f3b58ea15bb) by Noman Rafique
+
+### Dimensions and Ratios
+TODO
+
+```kotlin
+
+```
+
+### Guidelines
 ```kotlin
 constraints {
     val leftGuide: Int = verticalGuidelineBegin(dip(16))
 }
 ```
 
-## Placeholders
+### Biases
+TODO
+
+### Placeholders
 Not yet implemented.
 
-## Percent dimensions
+### Percent dimensions
 Not yet implemented.
 
+[//]: # (
 percent dimensions {
     android:layout_width="0dp"
     app:layout_constraintWidth_default="percent"
     app:layout_constraintWidth_percent=".4"
 }
-
 matchConstraintPercentHeight - only as layout parameter, not available in ConstraintSet
+)
 
-
-### IDs
+## IDs
 
 Constraint Layout heavily depends on ids of its child views. 
 For that reason, each child has to have defined an unique id.
@@ -131,13 +162,16 @@ val view = context.constraintLayout {
     // added views here won't have generated ids
                  
     generateIds = true
-    // added views here will once again have generated ids, unless id has been assigned during their creation
+    // added views here will once again have generated ids, unless an id has been assigned during their creation
 }
 ```
 
 Also, do NOT change ids of views after they have been added to the ConstraintLayout. ConstrainLayout
 internally stores references to its views via views' id when they have been added. Changing view's id
 and referencing it through its new id will not work and the view will most likely not even get displayed.
+
+## Managing multiple Constraint Sets
+TODO
 
 ## Sample
 
@@ -152,9 +186,9 @@ implementation 'cz.ackee:anko-constraint-layout:0.4.1'
 
 This library is still in development and your implementation might break when minor version gets bumped up. For now, backwards non-compatible changes happens about once every week. 
 
-##
+## References
+
 For more information about Constraint Layout in general, check out these websites:
  * [constraintlayout.com](https://constraintlayout.com/)
  * [developer.android.com/constraint-layout](https://developer.android.com/training/constraint-layout/index.html)
  * [realm.io/advanced-constraintlayout](https://academy.realm.io/posts/360-andev-2017-nicolas-roard-advanced-constraintlayout/)
- *
