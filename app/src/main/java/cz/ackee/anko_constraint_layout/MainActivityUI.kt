@@ -40,10 +40,10 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                         TransitionManager.beginDelayedTransition(this@constraintLayout)
                     }
                     if (isActivated) {
-                        expandedConstraintSet.applyTo(this@constraintLayout)
+                        expandedConstraintSet
                     } else {
-                        collapsedConstraintSet.applyTo(this@constraintLayout)
-                    }
+                        collapsedConstraintSet
+                    }.applyTo(this@constraintLayout)
                     isActivated = !isActivated
                 }
             }

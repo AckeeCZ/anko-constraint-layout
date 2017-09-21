@@ -23,6 +23,7 @@ import org.jetbrains.anko.custom.ankoView
 open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
 
     val matchConstraint: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+    @Deprecated("You shouldn't use match_parent inside of ConstraintLayout")
     val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
     val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
 
