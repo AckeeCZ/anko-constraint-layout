@@ -74,16 +74,16 @@ open class _ConstraintSet : ConstraintSet() {
     val CHAIN_PACKED: ChainType = ConstraintLayout.LayoutParams.CHAIN_PACKED
 
     //<editor-fold desc="<< Guidelines definitions >>">
-    private fun guideline(orientation: Int, init: (Int) -> Unit): Int {
+    open fun guideline(orientation: Int, init: (Int) -> Unit): Int {
         val guideId = newId()
         create(guideId, orientation)
         init(guideId)
         return guideId
     }
 
-    private fun guidelineBegin(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineBegin(it, guide)}
-    private fun guidelineEnd(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineEnd(it, guide) }
-    private fun guidelinePercent(orientation: Int, guide: Float) = guideline(orientation) { setGuidelinePercent(it, guide) }
+    open fun guidelineBegin(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineBegin(it, guide)}
+    open fun guidelineEnd(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineEnd(it, guide) }
+    open fun guidelinePercent(orientation: Int, guide: Float) = guideline(orientation) { setGuidelinePercent(it, guide) }
 
     open fun verticalGuidelineBegin(guide: Int) = guidelineBegin(LinearLayout.VERTICAL, guide)
     open fun verticalGuidelineEnd(guide: Int) = guidelineEnd(LinearLayout.VERTICAL, guide)
@@ -91,6 +91,21 @@ open class _ConstraintSet : ConstraintSet() {
     open fun horizontalGuidelineBegin(guide: Int) = guidelineBegin(LinearLayout.HORIZONTAL, guide)
     open fun horizontalGuidelineEnd(guide: Int) = guidelineEnd(LinearLayout.HORIZONTAL, guide)
     open fun horizontalGuidelinePercent(guide: Float) = guidelinePercent(LinearLayout.HORIZONTAL, guide)
+    //</editor-fold>
+
+    //<editor-fold desc="<< Barrier definitions >>">
+    open fun barrier(direction: Int, vararg views: View): Int {
+        val barrierId = newId()
+        createBarrier(barrierId, direction, *views.map { it.id }.toIntArray())
+        return barrierId
+    }
+
+    open fun barrierLeft(vararg views: View) = barrier(LEFT, *views)
+    open fun barrierRight(vararg views: View) = barrier(RIGHT, *views)
+    open fun barrierTop(vararg views: View) = barrier(TOP, *views)
+    open fun barrierBottom(vararg views: View) = barrier(BOTTOM, *views)
+    open fun barrierStart(vararg views: View) = barrier(START, *views)
+    open fun barrierEnd(vararg views: View) = barrier(END, *views)
     //</editor-fold>
 
     //<editor-fold desc="<< Chains definitions >>">

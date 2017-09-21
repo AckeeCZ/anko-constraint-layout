@@ -2,7 +2,6 @@ package cz.ackee.anko_constraint_layout
 
 import android.os.Build
 import android.support.constraint.ConstraintSet
-import android.support.constraint.Group
 import android.transition.TransitionManager
 import android.view.View
 import android.widget.ImageView
@@ -14,16 +13,16 @@ import org.jetbrains.anko.*
  **/
 class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
-    private lateinit var constraints1: ConstraintSet
-    private lateinit var constraints2: ConstraintSet
+    private lateinit var collapsedConstraintSet: ConstraintSet
+    private lateinit var expandedConstraintSet: ConstraintSet
 
     override fun create(ui: AnkoContext<MainActivity>): View {
         return ui.constraintLayout {
 
-            val image = imageView {
+            val background = imageView(R.drawable.nav_header_bg) {
                 scaleType = ImageView.ScaleType.CENTER
-                imageResource = R.drawable.nav_header_bg
             }
+            val avatar = imageView(R.drawable.ic_launcher_background)
 
             val name = defaultTextView("Joe") {
                 textSize = 20f
@@ -41,67 +40,93 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                         TransitionManager.beginDelayedTransition(this@constraintLayout)
                     }
                     if (isActivated) {
-                        constraints2.applyTo(this@constraintLayout)
+                        expandedConstraintSet.applyTo(this@constraintLayout)
                     } else {
-                        constraints1.applyTo(this@constraintLayout)
+                        collapsedConstraintSet.applyTo(this@constraintLayout)
                     }
                     isActivated = !isActivated
                 }
             }
 
-            val group: Group = this.group(name, surname)
-            group.visibility = View.VISIBLE
-
-            constraints1 = constraints {
-                val centerGuideId: Int = verticalGuidelinePercent(0.5f)
+            collapsedConstraintSet = constraints {
+                val topGuideId: Int = horizontalGuidelineBegin(16.dp)
 
                 name.connect(
-                        STARTS of parentId with 16.dp,
-                        TOPS of parentId with 16.dp
+                        HORIZONTAL of background,
+                        TOPS of topGuideId
                 )
-                surname.connect(
-                        TOP to BOTTOM of name,
-                        STARTS of name
-                )
-                age.connect(
-                        START to END of surname with 8.dp,
-                        BASELINES of surname
-                )
-                button.connect(
-                        ENDS of image,
-                        TOP to BOTTOM of image
-                )
-                image.size(matchConstraint, matchConstraint)
-                image.aspectRatio("H,16:9")
-                image.connect(
-                        RIGHTS of centerGuideId,
-                        TOPS of parentId,
-                        LEFTS of parentId
-                )
-            }
 
-            constraints2 = constraints {
-                val leftGuideId: Int = verticalGuidelineBegin(72.dp)
-                val rightGuideId: Int = verticalGuidelinePercent(2/3f)
-
-                name.connect(
-                        STARTS of leftGuideId,
-                        TOPS of parentId with 32.dp
-                )
                 surname.connect(
                         TOP to BOTTOM of name,
                         HORIZONTAL of name
                 )
-                button.clear(BOTTOM)
+
+                age.connect(
+                        START to END of surname with 8.dp,
+                        BASELINES of surname
+                )
+
+                avatar.visibility(View.GONE)
+
                 button.connect(
-                        HORIZONTAL of rightGuideId,
-                        TOPS of parentId with 128.dp
+                        HORIZONTAL of background,
+                        BOTTOMS of background
                 )
-                image.clear(TOP)
-                image.connect(
+                button.width(matchConstraint)
+
+                background.connect(
                         HORIZONTAL of parentId,
-                        BOTTOMS of parentId
+                        TOPS of parentId
                 )
+                background.size(240.dp, matchConstraint)
+                background.aspectRatio("H,3:2")
+            }
+
+            expandedConstraintSet = constraints {
+                val topGuideId: Int = horizontalGuidelineBegin(16.dp)
+                val leftGuideId: Int = verticalGuidelineBegin(72.dp)
+                val fullNameBarrier: Int = barrier(LEFT, name, surname)
+
+                name.clear(END, RIGHT)
+                name.connect(
+                        STARTS of leftGuideId,
+                        TOPS of topGuideId
+                )
+
+                surname.clear(END, RIGHT)
+                surname.connect(
+                        STARTS of name,
+                        TOP to BOTTOM of name
+                )
+
+                age.clear(START, LEFT)
+                age.connect(
+                        ENDS of surname,
+                        TOP to BOTTOM of surname
+                )
+
+                avatar.center(START of parentId, START of name)
+                avatar.connect(
+                        TOPS of name,
+                        BOTTOMS of surname
+                )
+                avatar.visibility(View.VISIBLE)
+                avatar.size(48.dp, 48.dp)
+
+                button.clear(START, LEFT)
+                button.connect(
+                        ENDS of background with 16.dp,
+                        BOTTOMS of background with 16.dp
+                )
+                button.width(wrapContent)
+
+                background.width(matchParent)
+                background.clear(TOP)
+                background.connect(
+                        HORIZONTAL of parentId,
+                        TOPS of parentId
+                )
+                background.aspectRatio("H,1:1")
             }
         }
     }

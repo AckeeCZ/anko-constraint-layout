@@ -19,7 +19,7 @@ import org.jetbrains.anko.custom.ankoView
  * @author David Khol [david.khol@ackee.cz]
  * @since 9.8.2017
  **/
-@Suppress("NOTHING_TO_INLINE", "unused")
+@Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanPrivate")
 open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
 
     val matchConstraint: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT

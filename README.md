@@ -107,19 +107,77 @@ view's height or width to `match_constraints` (0dp).
 For more information about chains, have a look at [this great article](https://medium.com/@nomanr/constraintlayout-chains-4f3b58ea15bb) by Noman Rafique.
 
 ### Dimensions and Ratios
-TODO
-
-### Guidelines
-TODO
+You can define view's width and height with `width()` and `height()` or `size()` methods.
 
 ```kotlin
 constraints {
-    val leftGuide: Int = verticalGuidelineBegin(dip(16))
+    image.size(matchConstraint, matchConstraint)
+    image.aspectRatio("H,16:9")
+}                
+```
+
+### Guidelines
+You can create [guidelines](https://developer.android.com/reference/android/support/constraint/Guideline.html) 
+in two ways - either as a standalone `View`:
+```kotlin
+constraintLayout {
+    val topGuide: Guideline = horizontalGuidelineBegin(dip(24))
+}
+```
+or as a part of Constraint Set:
+```kotlin
+constraints {
+    val leftGuideId: Int = verticalGuidelineBegin(dip(72))
+}
+```
+Ultimately, it is up to you which one you want to use as you can make references to either of those 
+inside of `connect()` method.
+ ```kotlin
+constraintLayout {
+    val name = textView("David")
+    val topGuide: Guideline = horizontalGuidelineBegin(dip(24))
+    
+    constraints {
+        val leftGuideId: Int = verticalGuidelineBegin(dip(72))
+        name.connect(
+                STARTS of leftGuideId,
+                TOP of topGuide
+        )
+    }
+}
+```
+All six combinations of helper methods (`HORIZONTAL | VERTICAL` and `BEGIN | END | PERCENT`) are
+available.
+
+### Barriers
+Similarly to guidelines, you can also define barriers either as a standalone `View`:
+```kotlin
+constraintLayout {
+    val descriptionBarrier: Barrier = barrierLeft(name, surname)
+}
+```
+or as a part of Constraint Set:
+```kotlin
+constraints {
+    val descriptionBarrier: Int = barrierLeft(name, surname)
+}
+```
+Ultimately, the use inside of `connect()` method does not differ:
+```kotlin
+constraints {
+    // ...
+    description.connect(
+            ENDS of descriptionBarrier,
+            TOPS of parentId
+    )
 }
 ```
 
-### Biases
+### Groups
 TODO
+
+### Biases
+You can define bias of 
 
 ### Placeholders
 Not yet implemented.

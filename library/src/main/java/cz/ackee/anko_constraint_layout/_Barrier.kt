@@ -16,9 +16,6 @@ import org.jetbrains.anko.custom.ankoView
  * @since 3.9.2017
  */
 
-// TODO: 4. 9. 2017 david.khol: check if barriers need to have generated ids
-// TODO: 4. 9. 2017 david.khol: generate ids for referenced views
-
 typealias BarrierType = Int
 
 val LEFT: BarrierType = Barrier.LEFT
@@ -28,13 +25,25 @@ val BOTTOM: BarrierType = Barrier.BOTTOM
 val START: BarrierType = Barrier.START
 val END: BarrierType = Barrier.END
 
-inline fun _ConstraintLayout.barrier(side: BarrierType, vararg views: View): Barrier = barrier(side, *views) {}
-inline fun _ConstraintLayout.barrier(side: BarrierType, vararg views: View, init: (Barrier).() -> Unit): Barrier {
+fun _ConstraintLayout.barrierLeft(vararg views: View, init: (Barrier).() -> Unit = {}) = barrier(LEFT, *views, init = init)
+fun _ConstraintLayout.barrierRight(vararg views: View, init: (Barrier).() -> Unit = {}) = barrier(RIGHT, *views, init = init)
+fun _ConstraintLayout.barrierTop(vararg views: View, init: (Barrier).() -> Unit = {}) = barrier(TOP, *views, init = init)
+fun _ConstraintLayout.barrierBottom(vararg views: View, init: (Barrier).() -> Unit = {}) = barrier(BOTTOM, *views, init = init)
+fun _ConstraintLayout.barrierStart(vararg views: View, init: (Barrier).() -> Unit = {}) = barrier(START, *views, init = init)
+fun _ConstraintLayout.barrierEnd(vararg views: View, init: (Barrier).() -> Unit = {}) = barrier(END, *views, init = init)
+
+fun _ConstraintLayout.barrierLeft(vararg views: ViewId, init: (Barrier).() -> Unit = {}) = barrier(LEFT, *views, init = init)
+fun _ConstraintLayout.barrierRight(vararg views: ViewId, init: (Barrier).() -> Unit = {}) = barrier(RIGHT, *views, init = init)
+fun _ConstraintLayout.barrierTop(vararg views: ViewId, init: (Barrier).() -> Unit = {}) = barrier(TOP, *views, init = init)
+fun _ConstraintLayout.barrierBottom(vararg views: ViewId, init: (Barrier).() -> Unit = {}) = barrier(BOTTOM, *views, init = init)
+fun _ConstraintLayout.barrierStart(vararg views: ViewId, init: (Barrier).() -> Unit = {}) = barrier(START, *views, init = init)
+fun _ConstraintLayout.barrierEnd(vararg views: ViewId, init: (Barrier).() -> Unit = {}) = barrier(END, *views, init = init)
+
+fun _ConstraintLayout.barrier(side: BarrierType, vararg views: View, init: (Barrier).() -> Unit = {}): Barrier {
     return barrier(side, *views.map { it.id }.toIntArray(), init = init)
 }
 
-inline fun _ConstraintLayout.barrier(side: BarrierType, vararg ids: ViewId): Barrier = barrier(side, *ids) {}
-inline fun _ConstraintLayout.barrier(side: BarrierType, vararg ids: ViewId, init: (Barrier).() -> Unit): Barrier {
+fun _ConstraintLayout.barrier(side: BarrierType, vararg ids: ViewId, init: (Barrier).() -> Unit = {}): Barrier {
     return ankoView(::Barrier, theme = 0) {
         type = side
         referencedIds = ids
