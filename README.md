@@ -146,7 +146,7 @@ constraintLayout {
     }
 }
 ```
-All six combinations of helper methods (`HORIZONTAL | VERTICAL` together with 
+All six combinations of helper methods (`HORIZONTAL | VERTICAL` combined with 
 `BEGIN | END | PERCENT`) are available.
 
 ### Barriers
@@ -218,7 +218,7 @@ configuration changes. That means any view that save its state into a bundle to 
 configuration change will NOT be able to restore its state.
 For numerous views such as `TextView`, `Button`, `ImageView`, etc. it is not a big deal because these
 views usually don't modify their state based on user input. For other views such as `EditText`, 
-`CheckBox`, `RadiButton`, `SeekBar`, etc. it is strongly advised to specify a static id so that
+`CheckBox`, `RadioButton`, `SeekBar`, etc. it is strongly advised to specify a static id so that
 Android framework can restore the view's state automatically.
 
 If you want to disable this functionality, you may set generateIds to false.
@@ -238,7 +238,9 @@ internally stores references to its views via views' id when they have been adde
 and referencing it through its new id will not work and the view will most likely not even get displayed.
 
 ## Managing multiple Constraint Sets
-You can define multiple Constraint Sets by simply using `constraints` block multiple times.
+You can define and switch between multiple Constraint Sets
+by simply using `constraints` block multiple times and 
+storing the returned value
 ```kotlin
 constraintLayout {
     val collapsedConstraintSet = constraints {
@@ -250,7 +252,7 @@ constraintLayout {
     }
 }
 ```
-Then you can switch between different layouts without recreating the layout.
+Then during runtime you can easily switch between different layouts without recreating the layout.
 ```kotlin
 if (isActivated) {
     expandedConstraintSet

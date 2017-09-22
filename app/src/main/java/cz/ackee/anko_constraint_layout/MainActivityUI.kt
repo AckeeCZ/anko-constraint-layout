@@ -51,35 +51,29 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
             collapsedConstraintSet = constraints {
                 val topGuideId: Int = horizontalGuidelineBegin(16.dp)
 
-                name.connect(
-                        HORIZONTAL of background,
-                        TOPS of topGuideId
-                )
+                name.connect(HORIZONTAL of background,
+                        TOPS of topGuideId)
 
-                surname.connect(
-                        TOP to BOTTOM of name,
-                        HORIZONTAL of name
-                )
+                surname.connect(TOP to BOTTOM of name,
+                        HORIZONTAL of name)
 
-                age.connect(
-                        START to END of surname with 8.dp,
-                        BASELINES of surname
-                )
+                age.connect(START to END of surname with 8.dp,
+                        BASELINES of surname)
 
                 avatar.visibility(View.GONE)
 
-                button.connect(
-                        HORIZONTAL of background,
-                        BOTTOMS of background
-                )
-                button.width(matchConstraint)
+                button.apply {
+                    width(matchConstraint)
+                    connect(HORIZONTAL of background,
+                            BOTTOMS of background)
+                }
 
-                background.connect(
-                        HORIZONTAL of parentId,
-                        TOPS of parentId
-                )
-                background.size(240.dp, matchConstraint)
-                background.aspectRatio("H,3:2")
+                background.apply {
+                    size(240.dp, matchConstraint)
+                    connect(HORIZONTAL of parentId,
+                            TOPS of parentId)
+                    dimensionRatio("H,3:2")
+                }
             }
 
             expandedConstraintSet = constraints {
@@ -87,46 +81,46 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                 val leftGuideId: Int = verticalGuidelineBegin(72.dp)
                 val fullNameBarrier: Int = barrier(LEFT, name, surname)
 
-                name.clear(END, RIGHT)
-                name.connect(
-                        STARTS of leftGuideId,
-                        TOPS of topGuideId
-                )
+                name.apply {
+                    clear(END, RIGHT)
+                    connect(STARTS of leftGuideId,
+                            TOPS of topGuideId)
+                }
 
-                surname.clear(END, RIGHT)
-                surname.connect(
-                        STARTS of name,
-                        TOP to BOTTOM of name
-                )
+                surname.apply {
+                    clear(END, RIGHT)
+                    connect(STARTS of name,
+                            TOP to BOTTOM of name)
+                }
 
-                age.clear(START, LEFT)
-                age.connect(
-                        ENDS of surname,
-                        TOP to BOTTOM of surname
-                )
+                age.apply {
+                    clear(START, LEFT)
+                    connect(ENDS of surname,
+                            TOP to BOTTOM of surname)
+                }
 
-                avatar.center(START of parentId, START of name)
-                avatar.connect(
-                        TOPS of name,
-                        BOTTOMS of surname
-                )
-                avatar.visibility(View.VISIBLE)
-                avatar.size(48.dp, 48.dp)
+                avatar.apply {
+                    center(START of parentId, START of name)
+                    connect(TOPS of name,
+                            BOTTOMS of surname)
+                    visibility(View.VISIBLE)
+                    size(48.dp, 48.dp)
+                }
 
-                button.clear(START, LEFT)
-                button.connect(
-                        ENDS of background with 16.dp,
-                        BOTTOMS of background with 16.dp
-                )
-                button.width(wrapContent)
+                button.apply {
+                    clear(START, LEFT)
+                    connect(ENDS of background with 16.dp,
+                            BOTTOMS of background with 16.dp)
+                    width(wrapContent)
+                }
 
-                background.width(matchParent)
-                background.clear(TOP)
-                background.connect(
-                        HORIZONTAL of parentId,
-                        TOPS of parentId
-                )
-                background.aspectRatio("H,1:1")
+                background.apply {
+                    width(matchParent)
+                    clear(TOP)
+                    connect(HORIZONTAL of parentId,
+                            TOPS of parentId)
+                    dimensionRatio("H,1:1")
+                }
             }
         }
     }

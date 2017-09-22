@@ -181,38 +181,13 @@ open class _ConstraintSet : ConstraintSet() {
     }
     //</editor-fold>
 
-
-    fun View.clear() {
+    //<editor-fold desc="<< Various extensions >>">
+    inline fun View.clear() {
         super.clear(this.id)
     }
-
-    fun View.clear(vararg sides: Side) {
+    inline fun View.clear(vararg sides: Side) {
         sides.forEach {
             super.clear(this.id, it)
-        }
-    }
-
-    fun View.connect(vararg connections: SideSideViewId) {
-        connections.forEach {
-            val sides = it.sides
-            val endId = it.viewId
-
-            if (it is SideSideViewIdMargin) {
-                val margin = it.margin
-                when (sides) {
-                    HORIZONTAL -> connectHorizontal(this.id, endId, margin)
-                    VERTICAL -> connectVertical(this.id, endId, margin)
-                    ALL -> connectAll(this.id, endId, margin)
-                    else -> connect(sides.start of this.id, sides.end of endId, margin)
-                }
-            } else {
-                when (sides) {
-                    HORIZONTAL -> connectHorizontal(this.id, endId)
-                    VERTICAL -> connectVertical(this.id, endId)
-                    ALL -> connectAll(this.id, endId)
-                    else -> connect(sides.start of this.id, sides.end of endId)
-                }
-            }
         }
     }
 
@@ -283,38 +258,81 @@ open class _ConstraintSet : ConstraintSet() {
         defaultHeight(height)
     }
 
-    inline fun View.horizontalBias(bias: Float) = setHorizontalBias(this.id, bias)
-    inline fun View.verticalBias(bias: Float) = setVerticalBias(this.id, bias)
-
     inline fun View.margin(anchor: Int, value: Int) = setMargin(this.id, anchor, value)
     inline fun View.goneMargin(anchor: Int, value: Int) = setGoneMargin(this.id, anchor, value)
 
-    inline fun View.aspectRatio(ratio: String) = dimensionRatio(ratio)
+    inline fun View.horizontalBias(bias: Float) = setHorizontalBias(this.id, bias)
+    inline fun View.verticalBias(bias: Float) = setVerticalBias(this.id, bias)
+
     inline fun View.dimensionRatio(ratio: String) = setDimensionRatio(this.id, ratio)
 
     inline fun View.visibility(visibility: Int) = setVisibility(this.id, visibility)
 
     inline fun View.alpha(alpha: Float) = setAlpha(this.id, alpha)
 
+    inline var View.applyElevation: Boolean
+        get() = getApplyElevation(this.id)
+        set(value) = setApplyElevation(this.id, value)
+    inline fun View.applyElevation(): Boolean = getApplyElevation(this.id)
+    inline fun View.applyElevation(apply: Boolean) = setApplyElevation(this.id, apply)
+    inline fun View.elevation(elevation: Float) = setElevation(this.id, elevation)
 
-//    fun View.rotate(rotation: Float) {
-//        setRotation(this.id, rotation)
-//        setRotationX(this.id, rotation)
-//        setRotationY(this.id, rotation)
-//    }
-//
-//    fun View.scale(scale: Float) {
-//        setScaleX(this.id, scale)
-//        setScaleY(this.id, scale)
-//    }
-//
-//    fun View.transformPivot(x: Float, y: Float) {
-//        setTransformPivot(this.id, x, y)
-//        setTransformPivotX(this.id, x)
-//        setTransformPivotY(this.id, y)
-//    }
+    inline fun View.rotationX(rotation: Float) = setRotationX(this.id, rotation)
+    inline fun View.rotationY(rotation: Float) = setRotationY(this.id, rotation)
+    inline fun View.rotation(rotation: Float) = setRotation(this.id, rotation)
+
+    inline fun View.scaleX(scale: Float) = setScaleX(this.id, scale)
+    inline fun View.scaleY(scale: Float) = setScaleY(this.id, scale)
+    inline fun View.scale(scale: Float) {
+        setScaleX(this.id, scale)
+        setScaleY(this.id, scale)
+    }
+
+    inline fun View.transformPivotX(x: Float) = setTransformPivotX(this.id, x)
+    inline fun View.transformPivotY(y: Float) = setTransformPivotY(this.id, y)
+    inline fun View.transformPivot(x: Float, y: Float) = setTransformPivot(this.id, x, y)
+
+    inline fun View.translationX(translationX: Float) = setTranslationX(this.id, translationX)
+    inline fun View.translationY(translationY: Float) = setTranslationY(this.id, translationY)
+    inline fun View.translationZ(translationZ: Float) = setTranslationZ(this.id, translationZ)
+    inline fun View.translation(translationX: Float, translationY: Float) = setTranslation(this.id, translationX, translationY)
+
+//    inline fun View.setHorizontalWeight(weight: Float) = setHorizontalWeight(this.id, weight)
+//    inline fun View.setVerticalWeight(weight: Float) = setVerticalWeight(this.id, weight)
+//    inline fun View.setHorizontalChainStyle(chainStyle: Int) = setHorizontalChainStyle(this.id, chainStyle)
+//    inline fun View.setVerticalChainStyle(chainStyle: Int) = setVerticalChainStyle(this.id, chainStyle)
+//    inline fun View.addToHorizontalChain(leftId: Int, rightId: Int) = addToHorizontalChain(this.id, leftId, rightId)
+//    inline fun View.addToHorizontalChainRTL(leftId: Int, rightId: Int) = addToHorizontalChainRTL(this.id, leftId, rightId)
+//    inline fun View.addToVerticalChain(topId: Int, bottomId: Int) = addToVerticalChain(this.id, topId, bottomId)
+//    inline fun View.removeFromVerticalChain() = removeFromVerticalChain(this.id)
+//    inline fun View.removeFromHorizontalChain() = removeFromHorizontalChain(this.id)
+
+    //</editor-fold>
 
     //<editor-fold desc="<< connect() overloads >>">
+    fun View.connect(vararg connections: SideSideViewId) {
+        connections.forEach {
+            val sides = it.sides
+            val endId = it.viewId
+
+            if (it is SideSideViewIdMargin) {
+                val margin = it.margin
+                when (sides) {
+                    HORIZONTAL -> connectHorizontal(this.id, endId, margin)
+                    VERTICAL -> connectVertical(this.id, endId, margin)
+                    ALL -> connectAll(this.id, endId, margin)
+                    else -> connect(sides.start of this.id, sides.end of endId, margin)
+                }
+            } else {
+                when (sides) {
+                    HORIZONTAL -> connectHorizontal(this.id, endId)
+                    VERTICAL -> connectVertical(this.id, endId)
+                    ALL -> connectAll(this.id, endId)
+                    else -> connect(sides.start of this.id, sides.end of endId)
+                }
+            }
+        }
+    }
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side) = connect(start.id, startSide, end.id, endSide)
@@ -369,7 +387,7 @@ open class _ConstraintSet : ConstraintSet() {
         connect(viewId, TOP, targetId, TOP)
         connect(viewId, BOTTOM, targetId, BOTTOM)
     }
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERICAL of targetId with margin)"))
+    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERTICAL of targetId with margin)"))
     fun connectVertical(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, TOP, targetId, TOP, margin)
         connect(viewId, BOTTOM, targetId, BOTTOM, margin)
@@ -387,6 +405,12 @@ open class _ConstraintSet : ConstraintSet() {
     }
     //</editor-fold>
 
+    //<editor-fold desc="<< Helper classes and infix operators >>">
+    open inner class SideSide(val start: Side, val end: Side)
+    open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id)
+    open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
+    open inner class SideSideViewMargin(sides: SideSide, view: View, margin: Int): SideSideViewIdMargin(sides, view.id, margin)
+    open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int): SideSideViewId(sides, viewId)
     open inner class SideView(side: Side, val view: View) : SideViewId(side, view.id)
     open inner class SideViewId(val side: Side, val viewId: ViewId)
     open inner class SideViewSide(val sideView: SideView, side: Side) : SideViewIdSide(sideView, side)
@@ -398,6 +422,11 @@ open class _ConstraintSet : ConstraintSet() {
     open inner class SideViewMargin(sideView: SideView, margin: Int) : SideViewIdMargin(sideView, margin)
     open inner class SideViewIdMargin(sideViewId: SideViewId, val margin: Int) : SideViewId(sideViewId.side, sideViewId.viewId)
 
+    infix inline fun Side.to(side: Side) = SideSide(this, side)
+    infix inline fun SideSide.of(view: View) = SideSideView(this, view)
+    infix inline fun SideSide.of(viewId: ViewId) = SideSideViewId(this, viewId)
+    infix inline fun SideSideView.with(margin: Int) = SideSideViewMargin(sides, view, margin)
+    infix inline fun SideSideViewId.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
     infix inline fun Side.of(view: View) = SideView(this, view)
     infix inline fun Side.of(viewId: ViewId) = SideViewId(this, viewId)
     infix inline fun SideView.to(side: Side) = SideViewSide(this, side)
@@ -408,18 +437,7 @@ open class _ConstraintSet : ConstraintSet() {
     infix inline fun SideViewIdSide.of(viewId: ViewId) = SideViewIdSideViewId(sideViewId, SideViewId(side, viewId))
     infix inline fun SideView.with(margin: Int) = SideViewMargin(this, margin)
     infix inline fun SideViewId.with(margin: Int) = SideViewIdMargin(this, margin)
-
-    open inner class SideSide(val start: Side, val end: Side)
-    open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id)
-    open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
-    open inner class SideSideViewMargin(sides: SideSide, view: View, margin: Int): SideSideViewIdMargin(sides, view.id, margin)
-    open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int): SideSideViewId(sides, viewId)
-
-    infix inline fun Side.to(side: Side) = SideSide(this, side)
-    infix inline fun SideSide.of(view: View) = SideSideView(this, view)
-    infix inline fun SideSide.of(viewId: ViewId) = SideSideViewId(this, viewId)
-    infix inline fun SideSideView.with(margin: Int) = SideSideViewMargin(sides, view, margin)
-    infix inline fun SideSideViewId.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
+    //</editor-fold>
 
 }
 
