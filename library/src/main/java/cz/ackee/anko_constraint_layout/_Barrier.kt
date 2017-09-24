@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("unused", "NOTHING_TO_INLINE")
 
 package cz.ackee.anko_constraint_layout
 

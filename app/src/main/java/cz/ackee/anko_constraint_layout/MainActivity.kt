@@ -12,7 +12,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MainActivityUI().setContentView(this)
+        PlaceholderUI().setContentView(this)
+//        MainActivityUI().setContentView(this)
     }
 
 }

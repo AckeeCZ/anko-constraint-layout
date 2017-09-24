@@ -26,12 +26,11 @@ abstract class AnkoComponentEx<in T>: AnkoComponent<T> {
 		}
 	}
 
-
 	final override fun createView(ui: AnkoContext<T>): View {
 		this.context = ui.ctx
 		return create(ui)
 	}
 
-	abstract fun create(ui: AnkoContext<T>): View
+	abstract protected fun create(ui: AnkoContext<T>): View
 
 }

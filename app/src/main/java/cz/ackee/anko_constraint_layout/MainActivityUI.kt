@@ -115,7 +115,7 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                 }
 
                 background.apply {
-                    width(matchParent)
+                    width(matchConstraint)
                     clear(TOP)
                     connect(HORIZONTAL of parentId,
                             TOPS of parentId)
