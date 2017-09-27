@@ -162,32 +162,38 @@ open class _ConstraintSet : ConstraintSet() {
         chain(this, begin, end, chainStyle, weights)
         return this
     }
+
     inline fun IntArray.chainSpread(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
         chain(begin, end, CHAIN_SPREAD, weights)
         return this
     }
+
     inline fun IntArray.chainSpreadInside(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
         chain(begin, end, CHAIN_SPREAD_INSIDE, weights)
         return this
     }
+
     inline fun IntArray.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
         chain(begin, end, CHAIN_PACKED, weights)
         return this
     }
 
-    inline fun Array<View>.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): Array<View> {
+    inline fun <T : View> Array<T>.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): Array<T> {
         chain(this.map { it.id }.toIntArray(), begin, end, chainStyle, weights)
         return this
     }
-    inline fun Array<View>.chainSpread(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<View> {
+
+    inline fun <T : View> Array<T>.chainSpread(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<T> {
         chain(begin, end, CHAIN_SPREAD, weights)
         return this
     }
-    inline fun Array<View>.chainSpreadInside(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<View> {
+
+    inline fun <T : View> Array<T>.chainSpreadInside(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<T> {
         chain(begin, end, CHAIN_SPREAD_INSIDE, weights)
         return this
     }
-    inline fun Array<View>.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<View> {
+
+    inline fun <T : View> Array<T>.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<T> {
         chain(begin, end, CHAIN_PACKED, weights)
         return this
     }
@@ -197,6 +203,7 @@ open class _ConstraintSet : ConstraintSet() {
         setHorizontalChainStyle(this.id, chainStyle)
         return this
     }
+
     inline fun <T : View> T.setVerticalChainStyle(chainStyle: ChainStyle): T {
         setVerticalChainStyle(this.id, chainStyle)
         return this
@@ -206,10 +213,12 @@ open class _ConstraintSet : ConstraintSet() {
         addToHorizontalChain(this.id, leftId, rightId)
         return this
     }
+
     inline fun <T : View> T.addToHorizontalChainRTL(leftId: Int, rightId: Int): T {
         addToHorizontalChainRTL(this.id, leftId, rightId)
         return this
     }
+
     inline fun <T : View> T.addToVerticalChain(topId: Int, bottomId: Int): T {
         addToVerticalChain(this.id, topId, bottomId)
         return this
@@ -219,10 +228,12 @@ open class _ConstraintSet : ConstraintSet() {
         addToHorizontalChain(this.id, leftView.id, rightView.id)
         return this
     }
+
     inline fun <T : View> T.addToHorizontalChainRTL(leftView: View, rightView: View): T {
         addToHorizontalChainRTL(this.id, leftView.id, rightView.id)
         return this
     }
+
     inline fun <T : View> T.addToVerticalChain(topView: View, bottomView: View): T {
         addToVerticalChain(this.id, topView.id, bottomView.id)
         return this
@@ -232,10 +243,22 @@ open class _ConstraintSet : ConstraintSet() {
         removeFromVerticalChain(this.id)
         return this
     }
+
     inline fun <T : View> T.removeFromHorizontalChain(): T {
         removeFromHorizontalChain(this.id)
         return this
     }
+
+    inline fun <T : View> T.setHorizontalWeight(weight: Float): T {
+        setHorizontalWeight(this.id, weight)
+        return this
+    }
+
+    inline fun <T : View> T.setVerticalWeight(weight: Float): T {
+        setVerticalWeight(this.id, weight)
+        return this
+    }
+
 
     //</editor-fold>
 
@@ -252,12 +275,6 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
-    /**
-     * Sample usage:
-     * ```
-     * view.center(LEFT of parentId with 16.dp, RIGHT of parentId with 16.dp, 0.2f)
-     * ```
-     */
     fun <T : View> T.center(first: SideViewId, second: SideViewId, bias: Float = 0.5F): T {
         val horizontal = listOf(LEFT, RIGHT)
         val vertical = listOf(TOP, BOTTOM)
@@ -392,7 +409,7 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
-    inline var View.applyElevation: Boolean
+    inline var <T : View> T.applyElevation: Boolean
         get() = getApplyElevation(this.id)
         set(value) = setApplyElevation(this.id, value)
 
@@ -475,9 +492,6 @@ open class _ConstraintSet : ConstraintSet() {
         setTranslation(this.id, translationX, translationY)
         return this
     }
-
-//    inline fun <T: View> T.setHorizontalWeight(weight: Float) = setHorizontalWeight(this.id, weight)
-//    inline fun <T: View> T.setVerticalWeight(weight: Float) = setVerticalWeight(this.id, weight)
     //</editor-fold>
 
     //<editor-fold desc="<< connect() overloads >>">

@@ -85,19 +85,17 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
                 avatar.visibility(View.GONE)
 
-                placeholder.apply {
-                    width(matchConstraint)
-                    height(32.dp)
-                    connect(HORIZONTAL of background,
-                            BOTTOMS of background)
-                }
+                placeholder
+                        .width(matchConstraint)
+                        .height(32.dp)
+                        .connect(HORIZONTAL of background,
+                                BOTTOMS of background)
 
-                background.apply {
-                    size(240.dp, matchConstraint)
-                    connect(HORIZONTAL of parentId,
-                            TOPS of parentId)
-                    dimensionRatio("H,3:2")
-                }
+                background
+                        .size(240.dp, matchConstraint)
+                        .connect(HORIZONTAL of parentId,
+                                TOPS of parentId)
+                        .dimensionRatio("H,3:2")
 
                 buttonsGroup.visibility(View.GONE)
             }
@@ -105,48 +103,36 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
             expandedLayout = constraints {
                 val fullNameBarrier: Int = barrier(LEFT, name, surname)
 
-                name.apply {
-                    connect(STARTS of background with 72.dp,
-                            TOPS of background with 16.dp)
-                }
+                name    .connect(STARTS of background with 72.dp,
+                                TOPS of background with 16.dp)
 
-                surname.apply {
-                    connect(STARTS of name,
-                            TOP to BOTTOM of name)
-                }
+                surname .connect(STARTS of name,
+                                TOP to BOTTOM of name)
 
-                age.apply {
-                    connect(ENDS of surname,
-                            TOP to BOTTOM of surname)
-                }
+                age     .connect(ENDS of surname,
+                                TOP to BOTTOM of surname)
 
-                avatar.apply {
-                    center(START of background, START of name)
-                    connect(TOPS of name,
-                            BOTTOMS of surname)
-                    size(48.dp, 48.dp)
-                }
+                avatar  .center(START of background, START of name)
+                        .connect(TOPS of name,
+                                BOTTOMS of surname)
+                        .size(48.dp, 48.dp)
 
-                placeholder.apply {
-                    connect(STARTS of background with 16.dp,
-                            VERTICAL of background)
-                }
+                placeholder
+                        .connect(STARTS of background with 16.dp,
+                                VERTICAL of background)
 
-                background.apply {
-                    width(matchConstraint)
-                    connect(HORIZONTAL of parentId,
+                background
+                        .width(matchConstraint)
+                        .connect(HORIZONTAL of parentId,
                             TOPS of parentId)
-                    dimensionRatio("H,1:1")
-                }
+                        .dimensionRatio("H,1:1")
 
                 buttonsGroup.visibility(View.VISIBLE)
 
-                chainPacked(TOP of background, BOTTOM of background) {
-                    views(*buttons)
-                }
-                buttons.forEach {
-                    it.connect(ENDS of background with 16.dp)
-                }
+                buttons.chainPacked(TOP of background, BOTTOM of background)
+                        .forEach {
+                            it.connect(ENDS of background with 16.dp)
+                        }
             }
         }.apply {
             constraintLayout = this
