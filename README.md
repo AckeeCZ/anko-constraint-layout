@@ -93,14 +93,12 @@ with `chain()`, `chainSpread()`, `chainSpreadInside()` or `chainPacked()` method
 
 ```kotlin
 constraints {
-    chainSpread(TOP of parentId, BOTTOM of parentId) {
-        views(name, surname)
-        weights(1f, 2f)
-    }
+    val views = arrayOf(name, surname) 
+    views.chainSpread(TOP of parentId, BOTTOM of parentId)
 }
 ```
-You have to use either views() or viewIds() function to define (at least 2) elements of the chain.
-When either `chain spread` or `chain spread inside` is used, you can also define weights to mimic 
+You have to define at least 2 elements of the chain. When either `chain spread` or 
+`chain spread inside` is used, you can also define pass weights parameter to mimic 
 functionality of `LinearLayout` and it's weights. To make weights work, you also have to set the 
 view's height or width to `match_constraints` (0dp).
 
@@ -174,7 +172,18 @@ constraints {
 ```
 
 ### Groups
-TODO
+You can define a group of views and control its visibility and elevation (and possibly more with
+future updates to the Constraint Layout library) for all referenced views.
+```kotlin
+constraintLayout {
+    val buttonsGroup = group(buttonOne, buttonTwo)
+    
+    constraints {
+        buttonsGroup.visibility(View.GONE)
+    }
+}
+```
+
 
 ### Biases
 If you constrain a view from both sides horizontally or vertically, you can also define 
@@ -190,18 +199,27 @@ constraints {
 ```
 
 ### Placeholders
-Not yet implemented.
+TODO
 
 ### Percent dimensions
-Not yet implemented.
+Not yet fully supported.
 
+Currently not possible to define through Constraint Set. To use percent dimensions, define 
+attributes of the view in layout params.
+```kotlin
+constraintLayout {
+    button().lparams {
+        matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT
+        matchConstraintPercentWidth = 0.8f
+    }
+}
+```
 <!---
 percent dimensions {
     android:layout_width="0dp"
     app:layout_constraintWidth_default="percent"
     app:layout_constraintWidth_percent=".4"
 }
-matchConstraintPercentHeight - only as layout parameter, not available in ConstraintSet
 --->
 
 ## IDs

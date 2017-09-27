@@ -310,6 +310,7 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
+
     inline fun <T : View> T.width(width: Int): T {
         constrainWidth(this.id, width)
         return this
@@ -330,6 +331,12 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
+//    inline fun <T : View> T.percentWidth(width: Int): T {
+//        constrainPercentWidth(this.id, width)
+//        return this
+//    }
+
+
     inline fun <T : View> T.height(height: Int): T {
         constrainHeight(this.id, height)
         return this
@@ -349,6 +356,12 @@ open class _ConstraintSet : ConstraintSet() {
         constrainDefaultHeight(this.id, height)
         return this
     }
+
+//    inline fun <T : View> T.percentHeight(width: Int): T {
+//        constrainPercentHeight(this.id, width)
+//        return this
+//    }
+
 
     inline fun <T : View> T.size(width: Int, height: Int): T {
         width(width)
@@ -373,6 +386,13 @@ open class _ConstraintSet : ConstraintSet() {
         defaultHeight(height)
         return this
     }
+
+//    inline fun <T : View> T.percentSize(width: Int, height: Int): T {
+//        constrainPercentWidth(width)
+//        constrainPercentHeight(height)
+//        return this
+//    }
+
 
     inline fun <T : View> T.margin(anchor: Int, value: Int): T {
         setMargin(this.id, anchor, value)
