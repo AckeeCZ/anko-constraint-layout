@@ -1,7 +1,10 @@
 package cz.ackee.anko_constraint_layout
 
 import android.content.Context
+import android.os.Build
+import android.transition.TransitionManager
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewManager
 import android.widget.TextView
 import org.jetbrains.anko.AnkoComponent
@@ -18,6 +21,12 @@ abstract class AnkoComponentEx<in T>: AnkoComponent<T> {
 	protected lateinit var context: Context
 	protected val Int.dp: Int get() = this.dpf.toInt()
 	protected val Int.dpf: Float get() = this * context.resources.displayMetrics.density
+
+	protected fun beginDelayedTransition(sceneRoot: ViewGroup) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			TransitionManager.beginDelayedTransition(sceneRoot)
+		}
+	}
 
 	protected fun ViewManager.defaultTextView(text: CharSequence, init: TextView.() -> Unit): TextView {
 		return textView(text) {

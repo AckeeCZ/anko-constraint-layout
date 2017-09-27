@@ -11,6 +11,7 @@ import cz.ackee.anko_constraint_layout.ViewIdGenerator.newId
 typealias Side = Int
 typealias ViewId = Int
 typealias ChainType = Int
+typealias DefaultSize = Int
 
 //enum class Side(val value: Int) {
 //    LEFT(ConstraintLayout.LayoutParams.LEFT),
@@ -46,9 +47,9 @@ open class _ConstraintSet : ConstraintSet() {
 
     val parentId: ViewId = ConstraintLayout.LayoutParams.PARENT_ID
 
-    val MATCH_CONSTRAINT_WRAP = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_WRAP
-    val MATCH_CONSTRAINT_SPREAD = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD
-    val MATCH_CONSTRAINT_PERCENT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT
+    val MATCH_CONSTRAINT_WRAP: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_WRAP
+    val MATCH_CONSTRAINT_SPREAD: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD
+    val MATCH_CONSTRAINT_PERCENT: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT
 
     val LEFT: Side =  ConstraintLayout.LayoutParams.LEFT
     val RIGHT: Side = ConstraintLayout.LayoutParams.RIGHT
@@ -234,12 +235,12 @@ open class _ConstraintSet : ConstraintSet() {
     inline fun View.width(width: Int) = constrainWidth(this.id, width)
     inline fun View.maxWidth(width: Int) = constrainMaxWidth(this.id, width)
     inline fun View.minWidth(width: Int) = constrainMinWidth(this.id, width)
-    inline fun View.defaultWidth(width: Int) = constrainDefaultWidth(this.id, width)
+    inline fun View.defaultWidth(width: DefaultSize) = constrainDefaultWidth(this.id, width)
 
     inline fun View.height(height: Int) = constrainHeight(this.id, height)
     inline fun View.maxHeight(height: Int) = constrainMaxHeight(this.id, height)
     inline fun View.minHeight(height: Int) = constrainMinHeight(this.id, height)
-    inline fun View.defaultHeight(height: Int) = constrainDefaultHeight(this.id, height)
+    inline fun View.defaultHeight(height: DefaultSize) = constrainDefaultHeight(this.id, height)
 
     inline fun View.size(width: Int, height: Int) {
         width(width)
@@ -253,7 +254,7 @@ open class _ConstraintSet : ConstraintSet() {
         minWidth(width)
         minHeight(height)
     }
-    inline fun View.defaultSize(width: Int, height: Int) {
+    inline fun View.defaultSize(width: DefaultSize, height: DefaultSize) {
         defaultWidth(width)
         defaultHeight(height)
     }

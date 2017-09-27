@@ -1,8 +1,6 @@
 package cz.ackee.anko_constraint_layout
 
-import android.os.Build
 import android.support.constraint.ConstraintSet
-import android.transition.TransitionManager
 import android.view.View
 import android.widget.ImageView
 import org.jetbrains.anko.*
@@ -13,8 +11,20 @@ import org.jetbrains.anko.*
  **/
 class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
-    private lateinit var collapsedConstraintSet: ConstraintSet
-    private lateinit var expandedConstraintSet: ConstraintSet
+    private lateinit var constraintLayout: _ConstraintLayout
+
+    private lateinit var collapsedLayout: ConstraintSet
+    private lateinit var expandedLayout: ConstraintSet
+
+    private fun switchLayouts() {
+        if (constraintLayout.isActivated) {
+            expandedLayout.applyTo(constraintLayout)
+        } else {
+            collapsedLayout.applyTo(constraintLayout)
+        }
+        constraintLayout.isActivated = !constraintLayout.isActivated
+    }
+
 
     override fun create(ui: AnkoContext<MainActivity>): View {
         return ui.constraintLayout {
@@ -34,21 +44,34 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                 textSize = 14f
             }
 
-            val button = button("Click me") {
-                setOnClickListener {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        TransitionManager.beginDelayedTransition(this@constraintLayout)
+            val placeholder = placeholder()
+
+            val buttonsGroup = group()
+
+            val listener = { view: View ->
+                beginDelayedTransition(constraintLayout)
+
+                if (placeholder.content == view) {
+                    switchLayouts()
+                } else {
+                    buttonsGroup.removeViews(view)
+                    if (placeholder.content != null) {
+                        buttonsGroup.addViews(placeholder.content)
                     }
-                    if (isActivated) {
-                        expandedConstraintSet
-                    } else {
-                        collapsedConstraintSet
-                    }.applyTo(this@constraintLayout)
-                    isActivated = !isActivated
+                    placeholder.setContent(view)
                 }
             }
 
-            collapsedConstraintSet = constraints {
+            val buttons = (1..6).map {
+                button("Button $it") {
+                    setOnClickListener(listener)
+                }
+            }.toTypedArray()
+
+            buttonsGroup.addViews(*buttons)
+
+
+            collapsedLayout = prepareConstraints {
                 val topGuideId: Int = horizontalGuidelineBegin(16.dp)
 
                 name.connect(HORIZONTAL of background,
@@ -62,8 +85,9 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
 
                 avatar.visibility(View.GONE)
 
-                button.apply {
+                placeholder.apply {
                     width(matchConstraint)
+                    height(32.dp)
                     connect(HORIZONTAL of background,
                             BOTTOMS of background)
                 }
@@ -74,54 +98,58 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
                             TOPS of parentId)
                     dimensionRatio("H,3:2")
                 }
+
+                buttonsGroup.visibility(View.GONE)
             }
 
-            expandedConstraintSet = constraints {
-                val topGuideId: Int = horizontalGuidelineBegin(16.dp)
-                val leftGuideId: Int = verticalGuidelineBegin(72.dp)
+            expandedLayout = constraints {
                 val fullNameBarrier: Int = barrier(LEFT, name, surname)
 
                 name.apply {
-                    clear(END, RIGHT)
-                    connect(STARTS of leftGuideId,
-                            TOPS of topGuideId)
+                    connect(STARTS of background with 72.dp,
+                            TOPS of background with 16.dp)
                 }
 
                 surname.apply {
-                    clear(END, RIGHT)
                     connect(STARTS of name,
                             TOP to BOTTOM of name)
                 }
 
                 age.apply {
-                    clear(START, LEFT)
                     connect(ENDS of surname,
                             TOP to BOTTOM of surname)
                 }
 
                 avatar.apply {
-                    center(START of parentId, START of name)
+                    center(START of background, START of name)
                     connect(TOPS of name,
                             BOTTOMS of surname)
-                    visibility(View.VISIBLE)
                     size(48.dp, 48.dp)
                 }
 
-                button.apply {
-                    clear(START, LEFT)
-                    connect(ENDS of background with 16.dp,
-                            BOTTOMS of background with 16.dp)
-                    width(wrapContent)
+                placeholder.apply {
+                    connect(STARTS of background with 16.dp,
+                            VERTICAL of background)
                 }
 
                 background.apply {
                     width(matchConstraint)
-                    clear(TOP)
                     connect(HORIZONTAL of parentId,
                             TOPS of parentId)
                     dimensionRatio("H,1:1")
                 }
+
+                buttonsGroup.visibility(View.VISIBLE)
+
+                chainPacked(TOP of background, BOTTOM of background) {
+                    views(*buttons)
+                }
+                buttons.forEach {
+                    it.connect(ENDS of background with 16.dp)
+                }
             }
+        }.apply {
+            constraintLayout = this
         }
     }
 }

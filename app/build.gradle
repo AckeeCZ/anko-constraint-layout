@@ -26,7 +26,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
-    implementation 'cz.ackee:anko-constraint-layout:0.4.11'
+    implementation 'cz.ackee:anko-constraint-layout:0.4.12'
 
     implementation "org.jetbrains.anko:anko-sdk15:0.10.1"
 

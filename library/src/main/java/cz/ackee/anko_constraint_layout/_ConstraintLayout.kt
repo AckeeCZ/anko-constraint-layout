@@ -56,11 +56,28 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
         super.onViewAdded(view)
     }
 
+    /**
+     * Create a constraint set from the current constraint layout, initialize it and
+     * apply the changes back to the constraint layout
+     */
     inline fun constraints(init: _ConstraintSet.() -> Unit): _ConstraintSet {
         val constraintSet = _ConstraintSet()
         constraintSet.clone(this)
         constraintSet.init()
         constraintSet.applyTo(this)
+        return constraintSet
+    }
+
+    /**
+     * Create a constraint set from the current constraint layout and initialize it.
+     * Changes are NOT applied back to the constraint layout.
+     * This might be useful when you define multiple constraint sets and don't want
+     * the changes from the first constraint set to be propagated to other ones.
+     */
+    inline fun prepareConstraints(init: _ConstraintSet.() -> Unit): _ConstraintSet {
+        val constraintSet = _ConstraintSet()
+        constraintSet.clone(this)
+        constraintSet.init()
         return constraintSet
     }
 
