@@ -10,7 +10,7 @@ import cz.ackee.anko_constraint_layout.ViewIdGenerator.newId
 
 typealias Side = Int
 typealias ViewId = Int
-typealias ChainType = Int
+typealias ChainStyle = Int
 typealias DefaultSize = Int
 
 //enum class Side(val value: Int) {
@@ -40,7 +40,7 @@ typealias DefaultSize = Int
  * @author David Khol [david.khol@ackee.cz]
  * @since 16.8.2017
  **/
-@Suppress("MemberVisibilityCanPrivate", "unused", "NOTHING_TO_INLINE")
+@Suppress("MemberVisibilityCanPrivate", "unused", "NOTHING_TO_INLINE", "PropertyName")
 open class _ConstraintSet : ConstraintSet() {
 
     private val TAG: String = javaClass.simpleName
@@ -51,7 +51,7 @@ open class _ConstraintSet : ConstraintSet() {
     val MATCH_CONSTRAINT_SPREAD: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD
     val MATCH_CONSTRAINT_PERCENT: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT
 
-    val LEFT: Side =  ConstraintLayout.LayoutParams.LEFT
+    val LEFT: Side = ConstraintLayout.LayoutParams.LEFT
     val RIGHT: Side = ConstraintLayout.LayoutParams.RIGHT
     val TOP: Side = ConstraintLayout.LayoutParams.TOP
     val BOTTOM: Side = ConstraintLayout.LayoutParams.BOTTOM
@@ -70,9 +70,9 @@ open class _ConstraintSet : ConstraintSet() {
     val VERTICAL: SideSide = SideSide(-2, -2)
     val ALL: SideSide = SideSide(-3, -3)
 
-    val CHAIN_SPREAD: ChainType = ConstraintLayout.LayoutParams.CHAIN_SPREAD
-    val CHAIN_SPREAD_INSIDE: ChainType = ConstraintLayout.LayoutParams.CHAIN_SPREAD_INSIDE
-    val CHAIN_PACKED: ChainType = ConstraintLayout.LayoutParams.CHAIN_PACKED
+    val CHAIN_SPREAD: ChainStyle = ConstraintLayout.LayoutParams.CHAIN_SPREAD
+    val CHAIN_SPREAD_INSIDE: ChainStyle = ConstraintLayout.LayoutParams.CHAIN_SPREAD_INSIDE
+    val CHAIN_PACKED: ChainStyle = ConstraintLayout.LayoutParams.CHAIN_PACKED
 
     //<editor-fold desc="<< Guidelines definitions >>">
     open fun guideline(orientation: Int, init: (Int) -> Unit): Int {
@@ -82,7 +82,7 @@ open class _ConstraintSet : ConstraintSet() {
         return guideId
     }
 
-    open fun guidelineBegin(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineBegin(it, guide)}
+    open fun guidelineBegin(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineBegin(it, guide) }
     open fun guidelineEnd(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineEnd(it, guide) }
     open fun guidelinePercent(orientation: Int, guide: Float) = guideline(orientation) { setGuidelinePercent(it, guide) }
 
@@ -110,86 +110,146 @@ open class _ConstraintSet : ConstraintSet() {
     //</editor-fold>
 
     //<editor-fold desc="<< Chains definitions >>">
-    // TODO: 3. 9. 2017 david.khol: add dynamic changing of chain types
-
-    open inner class Chain {
-        open var viewIds: IntArray = intArrayOf()
-        open var weights: FloatArray? = null
-
-        open fun views(vararg views: View) {
-            this.viewIds = views.map { it.id }.toIntArray()
-        }
-        open fun viewIds(vararg viewIds: ViewId) {
-            this.viewIds = viewIds
-        }
-        open fun weights(vararg weights: Float) {
-            this.weights = weights
-        }
-    }
 
     /**
      * Creates a chain of views.
      * ```
      * constraints {
      *     ...
-     *     chain(TOP of viewOne, BOTTOM of viewTwo, CHAIN_SPREAD) {
-     *         // You should either use views() or viewIds() functions to define elements of the chain
-     *         views(viewThree, viewFour, viewFive)
-     *
-     *         // Optionally you can also define weights to mimic functionality of LinearLayout and it's weights
-     *         weights(2f, 1f, 1f)
-     *     }
+     *     val views = arrayOf(viewThree, viewFour, viewFive)
+     *     views.chainSpread(TOP of viewOne, BOTTOM of viewTwo, arrayOf(2f, 1f, 1f))
      * }
      * ```
      */
-    open fun chain(begin: SideViewId, end: SideViewId, chainType: ChainType, init: Chain.() -> Unit) {
+    fun chain(viewIds: IntArray, begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null) {
         val horizontal = listOf(LEFT, RIGHT)
         val vertical = listOf(TOP, BOTTOM)
         val horizontalRtl = listOf(START, END)
 
-        val chain = Chain()
-        chain.init()
-
-        if (chain.weights != null && chain.weights!!.size != chain.viewIds.size) {
+        if (weights != null && weights!!.size != viewIds.size) {
             throw IllegalArgumentException("If you define weights, it must contain the same amount of weights as views")
         }
-        if (chain.weights != null && chainType == CHAIN_PACKED) {
-            throw IllegalArgumentException("You may not use weights together with chainType CHAIN_PACKED")
+        if (weights != null && chainStyle == CHAIN_PACKED) {
+            throw IllegalArgumentException("You may not use weights together with chainStyle CHAIN_PACKED")
         }
         // TODO: 9. 9. 2017 david.khol: throw an exception when no view in the chain defines match_constraint
 
         if (begin.side in horizontal && end.side in horizontal) {
-            createHorizontalChain(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
+            createHorizontalChain(begin.viewId, begin.side, end.viewId, end.side, viewIds, weights, chainStyle)
         } else if (begin.side in vertical && end.side in vertical) {
-            createVerticalChain(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
+            createVerticalChain(begin.viewId, begin.side, end.viewId, end.side, viewIds, weights, chainStyle)
         } else if (begin.side in horizontalRtl && end.side in horizontalRtl) {
-            createHorizontalChainRtl(begin.viewId, begin.side, end.viewId, end.side, chain.viewIds, chain.weights, chainType)
+            createHorizontalChainRtl(begin.viewId, begin.side, end.viewId, end.side, viewIds, weights, chainStyle)
         } else {
             throw IllegalArgumentException("Cannot create a chain for supplied sides: ${begin.side} together with ${end.side}")
         }
     }
 
-    open fun chainSpread(begin: SideViewId, end: SideViewId, init: Chain.() -> Unit) {
-        chain(begin, end, CHAIN_SPREAD, init)
+    fun chainSpread(viewIds: IntArray, begin: SideViewId, end: SideViewId, weights: FloatArray? = null) {
+        chain(viewIds, begin, end, CHAIN_SPREAD, weights)
     }
 
-    open fun chainSpreadInside(begin: SideViewId, end: SideViewId, init: Chain.() -> Unit) {
-        chain(begin, end, CHAIN_SPREAD_INSIDE, init)
+    fun chainSpreadInside(viewIds: IntArray, begin: SideViewId, end: SideViewId, weights: FloatArray? = null) {
+        chain(viewIds, begin, end, CHAIN_SPREAD_INSIDE, weights)
     }
 
-    open fun chainPacked(begin: SideViewId, end: SideViewId, init: Chain.() -> Unit) {
-        chain(begin, end, CHAIN_PACKED, init)
+    fun chainPacked(viewIds: IntArray, begin: SideViewId, end: SideViewId, weights: FloatArray? = null) {
+        chain(viewIds, begin, end, CHAIN_PACKED, weights)
     }
+
+
+    inline fun IntArray.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): IntArray {
+        chain(this, begin, end, chainStyle, weights)
+        return this
+    }
+    inline fun IntArray.chainSpread(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
+        chain(begin, end, CHAIN_SPREAD, weights)
+        return this
+    }
+    inline fun IntArray.chainSpreadInside(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
+        chain(begin, end, CHAIN_SPREAD_INSIDE, weights)
+        return this
+    }
+    inline fun IntArray.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
+        chain(begin, end, CHAIN_PACKED, weights)
+        return this
+    }
+
+    inline fun Array<View>.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): Array<View> {
+        chain(this.map { it.id }.toIntArray(), begin, end, chainStyle, weights)
+        return this
+    }
+    inline fun Array<View>.chainSpread(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<View> {
+        chain(begin, end, CHAIN_SPREAD, weights)
+        return this
+    }
+    inline fun Array<View>.chainSpreadInside(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<View> {
+        chain(begin, end, CHAIN_SPREAD_INSIDE, weights)
+        return this
+    }
+    inline fun Array<View>.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<View> {
+        chain(begin, end, CHAIN_PACKED, weights)
+        return this
+    }
+
+
+    inline fun <T : View> T.setHorizontalChainStyle(chainStyle: ChainStyle): T {
+        setHorizontalChainStyle(this.id, chainStyle)
+        return this
+    }
+    inline fun <T : View> T.setVerticalChainStyle(chainStyle: ChainStyle): T {
+        setVerticalChainStyle(this.id, chainStyle)
+        return this
+    }
+
+    inline fun <T : View> T.addToHorizontalChain(leftId: Int, rightId: Int): T {
+        addToHorizontalChain(this.id, leftId, rightId)
+        return this
+    }
+    inline fun <T : View> T.addToHorizontalChainRTL(leftId: Int, rightId: Int): T {
+        addToHorizontalChainRTL(this.id, leftId, rightId)
+        return this
+    }
+    inline fun <T : View> T.addToVerticalChain(topId: Int, bottomId: Int): T {
+        addToVerticalChain(this.id, topId, bottomId)
+        return this
+    }
+
+    inline fun <T : View> T.addToHorizontalChain(leftView: View, rightView: View): T {
+        addToHorizontalChain(this.id, leftView.id, rightView.id)
+        return this
+    }
+    inline fun <T : View> T.addToHorizontalChainRTL(leftView: View, rightView: View): T {
+        addToHorizontalChainRTL(this.id, leftView.id, rightView.id)
+        return this
+    }
+    inline fun <T : View> T.addToVerticalChain(topView: View, bottomView: View): T {
+        addToVerticalChain(this.id, topView.id, bottomView.id)
+        return this
+    }
+
+    inline fun <T : View> T.removeFromVerticalChain(): T {
+        removeFromVerticalChain(this.id)
+        return this
+    }
+    inline fun <T : View> T.removeFromHorizontalChain(): T {
+        removeFromHorizontalChain(this.id)
+        return this
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="<< Various extensions >>">
-    inline fun View.clear() {
+    inline fun <T : View> T.clear(): T {
         super.clear(this.id)
+        return this
     }
-    inline fun View.clear(vararg sides: Side) {
+
+    inline fun <T : View> T.clear(vararg sides: Side): T {
         sides.forEach {
             super.clear(this.id, it)
         }
+        return this
     }
 
     /**
@@ -198,7 +258,7 @@ open class _ConstraintSet : ConstraintSet() {
      * view.center(LEFT of parentId with 16.dp, RIGHT of parentId with 16.dp, 0.2f)
      * ```
      */
-    fun View.center(first: SideViewId, second: SideViewId, bias: Float = 0.5F) {
+    fun <T : View> T.center(first: SideViewId, second: SideViewId, bias: Float = 0.5F): T {
         val horizontal = listOf(LEFT, RIGHT)
         val vertical = listOf(TOP, BOTTOM)
         val horizontalRtl = listOf(START, END)
@@ -230,88 +290,198 @@ open class _ConstraintSet : ConstraintSet() {
         } else {
             throw IllegalArgumentException("Cannot center a view for supplied sides: $firstSide together with $secondSide")
         }
+        return this
     }
 
-    inline fun View.width(width: Int) = constrainWidth(this.id, width)
-    inline fun View.maxWidth(width: Int) = constrainMaxWidth(this.id, width)
-    inline fun View.minWidth(width: Int) = constrainMinWidth(this.id, width)
-    inline fun View.defaultWidth(width: DefaultSize) = constrainDefaultWidth(this.id, width)
+    inline fun <T : View> T.width(width: Int): T {
+        constrainWidth(this.id, width)
+        return this
+    }
 
-    inline fun View.height(height: Int) = constrainHeight(this.id, height)
-    inline fun View.maxHeight(height: Int) = constrainMaxHeight(this.id, height)
-    inline fun View.minHeight(height: Int) = constrainMinHeight(this.id, height)
-    inline fun View.defaultHeight(height: DefaultSize) = constrainDefaultHeight(this.id, height)
+    inline fun <T : View> T.maxWidth(width: Int): T {
+        constrainMaxWidth(this.id, width)
+        return this
+    }
 
-    inline fun View.size(width: Int, height: Int) {
+    inline fun <T : View> T.minWidth(width: Int): T {
+        constrainMinWidth(this.id, width)
+        return this
+    }
+
+    inline fun <T : View> T.defaultWidth(width: DefaultSize): T {
+        constrainDefaultWidth(this.id, width)
+        return this
+    }
+
+    inline fun <T : View> T.height(height: Int): T {
+        constrainHeight(this.id, height)
+        return this
+    }
+
+    inline fun <T : View> T.maxHeight(height: Int): T {
+        constrainMaxHeight(this.id, height)
+        return this
+    }
+
+    inline fun <T : View> T.minHeight(height: Int): T {
+        constrainMinHeight(this.id, height)
+        return this
+    }
+
+    inline fun <T : View> T.defaultHeight(height: DefaultSize): T {
+        constrainDefaultHeight(this.id, height)
+        return this
+    }
+
+    inline fun <T : View> T.size(width: Int, height: Int): T {
         width(width)
         height(height)
+        return this
     }
-    inline fun View.maxSize(width: Int, height: Int) {
+
+    inline fun <T : View> T.maxSize(width: Int, height: Int): T {
         maxWidth(width)
         maxHeight(height)
+        return this
     }
-    inline fun View.minSize(width: Int, height: Int) {
+
+    inline fun <T : View> T.minSize(width: Int, height: Int): T {
         minWidth(width)
         minHeight(height)
+        return this
     }
-    inline fun View.defaultSize(width: DefaultSize, height: DefaultSize) {
+
+    inline fun <T : View> T.defaultSize(width: DefaultSize, height: DefaultSize): T {
         defaultWidth(width)
         defaultHeight(height)
+        return this
     }
 
-    inline fun View.margin(anchor: Int, value: Int) = setMargin(this.id, anchor, value)
-    inline fun View.goneMargin(anchor: Int, value: Int) = setGoneMargin(this.id, anchor, value)
+    inline fun <T : View> T.margin(anchor: Int, value: Int): T {
+        setMargin(this.id, anchor, value)
+        return this
+    }
 
-    inline fun View.horizontalBias(bias: Float) = setHorizontalBias(this.id, bias)
-    inline fun View.verticalBias(bias: Float) = setVerticalBias(this.id, bias)
+    inline fun <T : View> T.goneMargin(anchor: Int, value: Int): T {
+        setGoneMargin(this.id, anchor, value)
+        return this
+    }
 
-    inline fun View.dimensionRatio(ratio: String) = setDimensionRatio(this.id, ratio)
+    inline fun <T : View> T.horizontalBias(bias: Float): T {
+        setHorizontalBias(this.id, bias)
+        return this
+    }
 
-    inline fun View.visibility(visibility: Int) = setVisibility(this.id, visibility)
+    inline fun <T : View> T.verticalBias(bias: Float): T {
+        setVerticalBias(this.id, bias)
+        return this
+    }
 
-    inline fun View.alpha(alpha: Float) = setAlpha(this.id, alpha)
+    inline fun <T : View> T.dimensionRatio(ratio: String): T {
+        setDimensionRatio(this.id, ratio)
+        return this
+    }
+
+    inline fun <T : View> T.visibility(visibility: Int): T {
+        setVisibility(this.id, visibility)
+        return this
+    }
+
+    inline fun <T : View> T.alpha(alpha: Float): T {
+        setAlpha(this.id, alpha)
+        return this
+    }
 
     inline var View.applyElevation: Boolean
         get() = getApplyElevation(this.id)
         set(value) = setApplyElevation(this.id, value)
-    inline fun View.applyElevation(): Boolean = getApplyElevation(this.id)
-    inline fun View.applyElevation(apply: Boolean) = setApplyElevation(this.id, apply)
-    inline fun View.elevation(elevation: Float) = setElevation(this.id, elevation)
 
-    inline fun View.rotationX(rotation: Float) = setRotationX(this.id, rotation)
-    inline fun View.rotationY(rotation: Float) = setRotationY(this.id, rotation)
-    inline fun View.rotation(rotation: Float) = setRotation(this.id, rotation)
-
-    inline fun View.scaleX(scale: Float) = setScaleX(this.id, scale)
-    inline fun View.scaleY(scale: Float) = setScaleY(this.id, scale)
-    inline fun View.scale(scale: Float) {
-        setScaleX(this.id, scale)
-        setScaleY(this.id, scale)
+    inline fun <T : View> T.applyElevation(): Boolean {
+        return getApplyElevation(this.id)
     }
 
-    inline fun View.transformPivotX(x: Float) = setTransformPivotX(this.id, x)
-    inline fun View.transformPivotY(y: Float) = setTransformPivotY(this.id, y)
-    inline fun View.transformPivot(x: Float, y: Float) = setTransformPivot(this.id, x, y)
+    inline fun <T : View> T.applyElevation(apply: Boolean): T {
+        setApplyElevation(this.id, apply)
+        return this
+    }
 
-    inline fun View.translationX(translationX: Float) = setTranslationX(this.id, translationX)
-    inline fun View.translationY(translationY: Float) = setTranslationY(this.id, translationY)
-    inline fun View.translationZ(translationZ: Float) = setTranslationZ(this.id, translationZ)
-    inline fun View.translation(translationX: Float, translationY: Float) = setTranslation(this.id, translationX, translationY)
+    inline fun <T : View> T.elevation(elevation: Float): T {
+        setElevation(this.id, elevation)
+        return this
+    }
 
-//    inline fun View.setHorizontalWeight(weight: Float) = setHorizontalWeight(this.id, weight)
-//    inline fun View.setVerticalWeight(weight: Float) = setVerticalWeight(this.id, weight)
-//    inline fun View.setHorizontalChainStyle(chainStyle: Int) = setHorizontalChainStyle(this.id, chainStyle)
-//    inline fun View.setVerticalChainStyle(chainStyle: Int) = setVerticalChainStyle(this.id, chainStyle)
-//    inline fun View.addToHorizontalChain(leftId: Int, rightId: Int) = addToHorizontalChain(this.id, leftId, rightId)
-//    inline fun View.addToHorizontalChainRTL(leftId: Int, rightId: Int) = addToHorizontalChainRTL(this.id, leftId, rightId)
-//    inline fun View.addToVerticalChain(topId: Int, bottomId: Int) = addToVerticalChain(this.id, topId, bottomId)
-//    inline fun View.removeFromVerticalChain() = removeFromVerticalChain(this.id)
-//    inline fun View.removeFromHorizontalChain() = removeFromHorizontalChain(this.id)
+    inline fun <T : View> T.rotationX(rotation: Float): T {
+        setRotationX(this.id, rotation)
+        return this
+    }
 
+    inline fun <T : View> T.rotationY(rotation: Float): T {
+        setRotationY(this.id, rotation)
+        return this
+    }
+
+    inline fun <T : View> T.rotation(rotation: Float): T {
+        setRotation(this.id, rotation)
+        return this
+    }
+
+    inline fun <T : View> T.scaleX(scale: Float): T {
+        setScaleX(this.id, scale)
+        return this
+    }
+
+    inline fun <T : View> T.scaleY(scale: Float): T {
+        setScaleY(this.id, scale)
+        return this
+    }
+
+    inline fun <T : View> T.scale(scale: Float): T {
+        setScaleX(this.id, scale)
+        setScaleY(this.id, scale)
+        return this
+    }
+
+    inline fun <T : View> T.transformPivotX(x: Float): T {
+        setTransformPivotX(this.id, x)
+        return this
+    }
+
+    inline fun <T : View> T.transformPivotY(y: Float): T {
+        setTransformPivotY(this.id, y)
+        return this
+    }
+
+    inline fun <T : View> T.transformPivot(x: Float, y: Float): T {
+        setTransformPivot(this.id, x, y)
+        return this
+    }
+
+    inline fun <T : View> T.translationX(translationX: Float): T {
+        setTranslationX(this.id, translationX)
+        return this
+    }
+
+    inline fun <T : View> T.translationY(translationY: Float): T {
+        setTranslationY(this.id, translationY)
+        return this
+    }
+
+    inline fun <T : View> T.translationZ(translationZ: Float): T {
+        setTranslationZ(this.id, translationZ)
+        return this
+    }
+
+    inline fun <T : View> T.translation(translationX: Float, translationY: Float): T {
+        setTranslation(this.id, translationX, translationY)
+        return this
+    }
+
+//    inline fun <T: View> T.setHorizontalWeight(weight: Float) = setHorizontalWeight(this.id, weight)
+//    inline fun <T: View> T.setVerticalWeight(weight: Float) = setVerticalWeight(this.id, weight)
     //</editor-fold>
 
     //<editor-fold desc="<< connect() overloads >>">
-    fun View.connect(vararg connections: SideSideViewId) {
+    fun <T : View> T.connect(vararg connections: SideSideViewId): T {
         connections.forEach {
             val sides = it.sides
             val endId = it.viewId
@@ -333,35 +503,42 @@ open class _ConstraintSet : ConstraintSet() {
                 }
             }
         }
+        return this
     }
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side) = connect(start.id, startSide, end.id, endSide)
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(start: View, startSide: Side, end: View, endSide: Side, margin: Int) = connect(start.id, startSide, end.id, endSide, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId)"))
     fun connect(start: View, startSide: Side, endId: Int, endSide: Side) = connect(start.id, startSide, endId, endSide)
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId with margin)"))
     fun connect(start: View, startSide: Side, endId: Int, endSide: Side, margin: Int) = connect(start.id, startSide, endId, endSide, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(startId: Int, startSide: Side, end: View, endSide: Side) = connect(startId, startSide, end.id, endSide)
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(startId: Int, startSide: Side, end: View, endSide: Side, margin: Int) = connect(startId, startSide, end.id, endSide, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(start: SideViewId, end: SideViewId) = connect(start.viewId, start.side, end.viewId, end.side)
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(start: SideViewId, end: SideViewId, margin: Int) = connect(start.viewId, start.side, end.viewId, end.side, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
     fun connect(con: SideViewSideView) = connect(con.from.view, con.from.side, con.to.view, con.to.side)
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
     fun connect(con: SideViewSideView, margin: Int) = connect(con.from.view, con.from.side, con.to.view, con.to.side, margin)
 
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId)"))
     fun connectBaseline(viewId: ViewId, targetId: ViewId) = connect(viewId, BASELINE, targetId, BASELINE)
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId with margin)"))
     private fun connectBaseline(viewId: ViewId, targetId: ViewId, margin: Int) {
         Log.w(TAG, "Baseline connection cannot define margin. Check your definition.")
@@ -375,6 +552,7 @@ open class _ConstraintSet : ConstraintSet() {
         connect(viewId, END, targetId, END)
         connect(viewId, RIGHT, targetId, RIGHT)
     }
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(HORIZONTAL of targetId with margin)"))
     fun connectHorizontal(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, START, targetId, START, margin)
@@ -388,6 +566,7 @@ open class _ConstraintSet : ConstraintSet() {
         connect(viewId, TOP, targetId, TOP)
         connect(viewId, BOTTOM, targetId, BOTTOM)
     }
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERTICAL of targetId with margin)"))
     fun connectVertical(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, TOP, targetId, TOP, margin)
@@ -399,6 +578,7 @@ open class _ConstraintSet : ConstraintSet() {
         connectVertical(viewId, targetId)
         connectHorizontal(viewId, targetId)
     }
+
     @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(ALL of targetId with margin)"))
     fun connectAll(viewId: ViewId, targetId: ViewId, margin: Int) {
         connectVertical(viewId, targetId, margin)
@@ -408,10 +588,11 @@ open class _ConstraintSet : ConstraintSet() {
 
     //<editor-fold desc="<< Helper classes and infix operators >>">
     open inner class SideSide(val start: Side, val end: Side)
+
     open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id)
     open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
-    open inner class SideSideViewMargin(sides: SideSide, view: View, margin: Int): SideSideViewIdMargin(sides, view.id, margin)
-    open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int): SideSideViewId(sides, viewId)
+    open inner class SideSideViewMargin(sides: SideSide, view: View, margin: Int) : SideSideViewIdMargin(sides, view.id, margin)
+    open inner class SideSideViewIdMargin(sides: SideSide, viewId: ViewId, val margin: Int) : SideSideViewId(sides, viewId)
     open inner class SideView(side: Side, val view: View) : SideViewId(side, view.id)
     open inner class SideViewId(val side: Side, val viewId: ViewId)
     open inner class SideViewSide(val sideView: SideView, side: Side) : SideViewIdSide(sideView, side)
