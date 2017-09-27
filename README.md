@@ -78,7 +78,7 @@ constraints {
 * First `SIDE` defines side of the view we create constraints for. 
 * Second `SIDE` defines side of the view we connect first view to.
 * `VIEW` defines the view we connect first view to
-* `with MARGIN` clause is optional and defines from first view to the second one
+* `with MARGIN` clause is optional and defines margin from the first view to the second one
 
 Available `SIDE`s are: `LEFT`, `RIGHT`, `TOP`, `BOTTOM`, `BASELINE`, `START`, `END`
  
@@ -98,8 +98,8 @@ constraints {
 }
 ```
 You have to define at least 2 elements of the chain. When either `chain spread` or 
-`chain spread inside` is used, you can also define pass weights parameter to mimic 
-functionality of `LinearLayout` and it's weights. To make weights work, you also have to set the 
+`chain spread inside` is used, you can also pass weights parameter to mimic functionality 
+of `LinearLayout` and it's weights. To make weights work, you also have to set the 
 view's height or width to `match_constraints` (0dp).
 
 For more information about chains, have a look at [this great article](https://medium.com/@nomanr/constraintlayout-chains-4f3b58ea15bb) by Noman Rafique.
@@ -204,8 +204,8 @@ TODO
 ### Percent dimensions
 Not yet fully supported.
 
-Currently not possible to define through Constraint Set. To use percent dimensions, define 
-attributes of the view in layout params.
+Currently it is not possible to define percent dimensions through Constraint Set. 
+To use percent dimensions, define attributes directly in the view's layout params.
 ```kotlin
 constraintLayout {
     button().lparams {
@@ -256,12 +256,15 @@ internally stores references to its views via views' id when they have been adde
 and referencing it through its new id will not work and the view will most likely not even get displayed.
 
 ## Managing multiple Constraint Sets
-You can define and switch between multiple Constraint Sets
-by simply using `constraints` block multiple times and 
-storing the returned value
+You can define and switch between multiple Constraint Sets by simply using `constraints` block 
+multiple times and storing returned values.
+
+You can also use `prepareConstraints` block to define relations between views, but not apply it 
+to the Constraint Layout. This might be useful when you define multiple constraint sets and 
+don't want the changes from the first constraint set to be propagated to other ones.
 ```kotlin
 constraintLayout {
-    val collapsedConstraintSet = constraints {
+    val collapsedConstraintSet = prepareConstraints {
         // set of constraints
     }
     
@@ -288,7 +291,7 @@ Sample app can be found in `app` module.
 
 Add this dependency to your project:
 ```groovy
-implementation 'cz.ackee:anko-constraint-layout:0.4.1'
+implementation 'cz.ackee:anko-constraint-layout:0.5.0'
 ```
 
 This library is still in development and your implementation might break when minor version gets bumped up. For now, backwards non-compatible changes happens about once every week. 
