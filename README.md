@@ -1,6 +1,8 @@
 # Anko Constraint Layout
 
-This library adds missing support for Constraint Layout in Anko library.
+This library adds missing support for Constraint Layout in Anko library. It is 
+based on the `1.1.0-beta1` version of the library and adds support for `Group`, `Barrier` 
+and `Placeholder` views as well.
 
 ## Usage
 
@@ -184,6 +186,9 @@ constraintLayout {
 }
 ```
 
+> Additionally for both `Barrier` and `Group` you can easily add to and remove from 
+referenced views with `addViews(vararg View)` and `removeViews(vararg View)` respectively.
+
 
 ### Biases
 If you constrain a view from both sides horizontally or vertically, you can also define 
@@ -197,15 +202,42 @@ constraints {
     avatar.horizontalBias(0.2f)
 }
 ```
+Another option how to define the bias is to use `View.center()` function which also
+accepts a bias parameter:
+```kotlin
+constraints {
+    avatar.center(START of background, START of name, 0.2f)
+}
+```
 
 ### Placeholders
-TODO
+You can define a [placeholder](http://androidkt.com/constraintlayout/#80f0) and dynamically 
+replace the contents of the placeholder with `placeholder.setContent(View)` method:
+```kotlin
+constraintLayout {
+    val placeholder = placeholder()
+    
+    button("Click me") {
+        setOnClickListener {
+            placeholder.setContent(this@button)
+        }
+    }
+    
+    constraints {
+        button.connect(/* add connections */)
+        placeholder.connect(/* add connections */)
+    }
+}
+```
+
+When you set a view as a content of the placeholder, the view will be displayed with 
+layout params of the placeholder. When you set another view as a content of the placeholder
+(or pass null as the content view), the original view will return to its original 
+position and size. 
 
 ### Percent dimensions
-Not yet fully supported.
-
 Currently it is not possible to define percent dimensions through Constraint Set. 
-To use percent dimensions, define attributes directly in the view's layout params.
+To use percent dimensions, you must define attributes directly in the view's layout params.
 ```kotlin
 constraintLayout {
     button().lparams {
@@ -214,13 +246,6 @@ constraintLayout {
     }
 }
 ```
-<!---
-percent dimensions {
-    android:layout_width="0dp"
-    app:layout_constraintWidth_default="percent"
-    app:layout_constraintWidth_percent=".4"
-}
---->
 
 ## IDs
 

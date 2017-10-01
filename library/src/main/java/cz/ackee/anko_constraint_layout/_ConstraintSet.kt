@@ -2,7 +2,6 @@ package cz.ackee.anko_constraint_layout
 
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import cz.ackee.anko_constraint_layout.ViewIdGenerator.newId
@@ -12,29 +11,7 @@ typealias Side = Int
 typealias ViewId = Int
 typealias ChainStyle = Int
 typealias DefaultSize = Int
-
-//enum class Side(val value: Int) {
-//    LEFT(ConstraintLayout.LayoutParams.LEFT),
-//    RIGHT(ConstraintLayout.LayoutParams.RIGHT),
-//    TOP(ConstraintLayout.LayoutParams.TOP),
-//    BOTTOM(ConstraintLayout.LayoutParams.BOTTOM),
-//    BASELINE(ConstraintLayout.LayoutParams.BASELINE),
-//    START(ConstraintLayout.LayoutParams.START),
-//    END(ConstraintLayout.LayoutParams.END)
-//}
-//
-//enum class SideSide(val start: Side, val end: Side) {
-//    LEFTS(Side.LEFT, Side.LEFT),
-//    RIGHTS(Side.RIGHT, Side.RIGHT),
-//    TOPS(Side.TOP, Side.TOP),
-//    BOTTOMS(Side.BOTTOM, Side.BOTTOM),
-//    BASELINES(Side.BASELINE, Side.BASELINE),
-//    STARTS(Side.START, Side.START),
-//    ENDS(Side.END, Side.END),
-//    HORIZONTAL(Side(-1), Side(-1)),
-//    VERTICAL(Side(-2), Side(-2)),
-//    ALL(Side(-3), Side(-3)),
-//}
+typealias GuideStyle = Int
 
 /**
  * @author David Khol [david.khol@ackee.cz]
@@ -74,39 +51,42 @@ open class _ConstraintSet : ConstraintSet() {
     val CHAIN_SPREAD_INSIDE: ChainStyle = ConstraintLayout.LayoutParams.CHAIN_SPREAD_INSIDE
     val CHAIN_PACKED: ChainStyle = ConstraintLayout.LayoutParams.CHAIN_PACKED
 
+    val GUIDE_VERTICAL: GuideStyle = LinearLayout.VERTICAL
+    val GUIDE_HORIZONTAL: GuideStyle = LinearLayout.HORIZONTAL
+
     //<editor-fold desc="<< Guidelines definitions >>">
-    open fun guideline(orientation: Int, init: (Int) -> Unit): Int {
+    inline fun guideline(orientation: GuideStyle, init: (Int) -> Unit): Int {
         val guideId = newId()
         create(guideId, orientation)
         init(guideId)
         return guideId
     }
 
-    open fun guidelineBegin(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineBegin(it, guide) }
-    open fun guidelineEnd(orientation: Int, guide: Int) = guideline(orientation) { setGuidelineEnd(it, guide) }
-    open fun guidelinePercent(orientation: Int, guide: Float) = guideline(orientation) { setGuidelinePercent(it, guide) }
+    inline fun guidelineBegin(orientation: GuideStyle, guide: Int) = guideline(orientation) { setGuidelineBegin(it, guide) }
+    inline fun guidelineEnd(orientation: GuideStyle, guide: Int) = guideline(orientation) { setGuidelineEnd(it, guide) }
+    inline fun guidelinePercent(orientation: GuideStyle, guide: Float) = guideline(orientation) { setGuidelinePercent(it, guide) }
 
-    open fun verticalGuidelineBegin(guide: Int) = guidelineBegin(LinearLayout.VERTICAL, guide)
-    open fun verticalGuidelineEnd(guide: Int) = guidelineEnd(LinearLayout.VERTICAL, guide)
-    open fun verticalGuidelinePercent(guide: Float) = guidelinePercent(LinearLayout.VERTICAL, guide)
-    open fun horizontalGuidelineBegin(guide: Int) = guidelineBegin(LinearLayout.HORIZONTAL, guide)
-    open fun horizontalGuidelineEnd(guide: Int) = guidelineEnd(LinearLayout.HORIZONTAL, guide)
-    open fun horizontalGuidelinePercent(guide: Float) = guidelinePercent(LinearLayout.HORIZONTAL, guide)
+    inline fun verticalGuidelineBegin(guide: Int) = guidelineBegin(LinearLayout.VERTICAL, guide)
+    inline fun verticalGuidelineEnd(guide: Int) = guidelineEnd(LinearLayout.VERTICAL, guide)
+    inline fun verticalGuidelinePercent(guide: Float) = guidelinePercent(LinearLayout.VERTICAL, guide)
+    inline fun horizontalGuidelineBegin(guide: Int) = guidelineBegin(LinearLayout.HORIZONTAL, guide)
+    inline fun horizontalGuidelineEnd(guide: Int) = guidelineEnd(LinearLayout.HORIZONTAL, guide)
+    inline fun horizontalGuidelinePercent(guide: Float) = guidelinePercent(LinearLayout.HORIZONTAL, guide)
     //</editor-fold>
 
     //<editor-fold desc="<< Barrier definitions >>">
-    open fun barrier(direction: Int, vararg views: View): Int {
+    inline fun barrier(direction: Side, vararg views: View): Int {
         val barrierId = newId()
         createBarrier(barrierId, direction, *views.map { it.id }.toIntArray())
         return barrierId
     }
 
-    open fun barrierLeft(vararg views: View) = barrier(LEFT, *views)
-    open fun barrierRight(vararg views: View) = barrier(RIGHT, *views)
-    open fun barrierTop(vararg views: View) = barrier(TOP, *views)
-    open fun barrierBottom(vararg views: View) = barrier(BOTTOM, *views)
-    open fun barrierStart(vararg views: View) = barrier(START, *views)
-    open fun barrierEnd(vararg views: View) = barrier(END, *views)
+    inline fun barrierLeft(vararg views: View) = barrier(LEFT, *views)
+    inline fun barrierRight(vararg views: View) = barrier(RIGHT, *views)
+    inline fun barrierTop(vararg views: View) = barrier(TOP, *views)
+    inline fun barrierBottom(vararg views: View) = barrier(BOTTOM, *views)
+    inline fun barrierStart(vararg views: View) = barrier(START, *views)
+    inline fun barrierEnd(vararg views: View) = barrier(END, *views)
     //</editor-fold>
 
     //<editor-fold desc="<< Chains definitions >>">
@@ -121,12 +101,12 @@ open class _ConstraintSet : ConstraintSet() {
      * }
      * ```
      */
-    fun chain(viewIds: IntArray, begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null) {
+    fun IntArray.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): IntArray {
         val horizontal = listOf(LEFT, RIGHT)
         val vertical = listOf(TOP, BOTTOM)
         val horizontalRtl = listOf(START, END)
 
-        if (weights != null && weights!!.size != viewIds.size) {
+        if (weights != null && weights.size != this.size) {
             throw IllegalArgumentException("If you define weights, it must contain the same amount of weights as views")
         }
         if (weights != null && chainStyle == CHAIN_PACKED) {
@@ -135,31 +115,15 @@ open class _ConstraintSet : ConstraintSet() {
         // TODO: 9. 9. 2017 david.khol: throw an exception when no view in the chain defines match_constraint
 
         if (begin.side in horizontal && end.side in horizontal) {
-            createHorizontalChain(begin.viewId, begin.side, end.viewId, end.side, viewIds, weights, chainStyle)
+            createHorizontalChain(begin.viewId, begin.side, end.viewId, end.side, this, weights, chainStyle)
         } else if (begin.side in vertical && end.side in vertical) {
-            createVerticalChain(begin.viewId, begin.side, end.viewId, end.side, viewIds, weights, chainStyle)
+            createVerticalChain(begin.viewId, begin.side, end.viewId, end.side, this, weights, chainStyle)
         } else if (begin.side in horizontalRtl && end.side in horizontalRtl) {
-            createHorizontalChainRtl(begin.viewId, begin.side, end.viewId, end.side, viewIds, weights, chainStyle)
+            createHorizontalChainRtl(begin.viewId, begin.side, end.viewId, end.side, this, weights, chainStyle)
         } else {
             throw IllegalArgumentException("Cannot create a chain for supplied sides: ${begin.side} together with ${end.side}")
         }
-    }
 
-    fun chainSpread(viewIds: IntArray, begin: SideViewId, end: SideViewId, weights: FloatArray? = null) {
-        chain(viewIds, begin, end, CHAIN_SPREAD, weights)
-    }
-
-    fun chainSpreadInside(viewIds: IntArray, begin: SideViewId, end: SideViewId, weights: FloatArray? = null) {
-        chain(viewIds, begin, end, CHAIN_SPREAD_INSIDE, weights)
-    }
-
-    fun chainPacked(viewIds: IntArray, begin: SideViewId, end: SideViewId, weights: FloatArray? = null) {
-        chain(viewIds, begin, end, CHAIN_PACKED, weights)
-    }
-
-
-    inline fun IntArray.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): IntArray {
-        chain(this, begin, end, chainStyle, weights)
         return this
     }
 
@@ -179,7 +143,7 @@ open class _ConstraintSet : ConstraintSet() {
     }
 
     inline fun <T : View> Array<T>.chain(begin: SideViewId, end: SideViewId, chainStyle: ChainStyle, weights: FloatArray? = null): Array<T> {
-        chain(this.map { it.id }.toIntArray(), begin, end, chainStyle, weights)
+        this.map { it.id }.toIntArray().chain(begin, end, chainStyle, weights)
         return this
     }
 
@@ -331,11 +295,6 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
-//    inline fun <T : View> T.percentWidth(width: Int): T {
-//        constrainPercentWidth(this.id, width)
-//        return this
-//    }
-
 
     inline fun <T : View> T.height(height: Int): T {
         constrainHeight(this.id, height)
@@ -356,11 +315,6 @@ open class _ConstraintSet : ConstraintSet() {
         constrainDefaultHeight(this.id, height)
         return this
     }
-
-//    inline fun <T : View> T.percentHeight(width: Int): T {
-//        constrainPercentHeight(this.id, width)
-//        return this
-//    }
 
 
     inline fun <T : View> T.size(width: Int, height: Int): T {
@@ -386,12 +340,6 @@ open class _ConstraintSet : ConstraintSet() {
         defaultHeight(height)
         return this
     }
-
-//    inline fun <T : View> T.percentSize(width: Int, height: Int): T {
-//        constrainPercentWidth(width)
-//        constrainPercentHeight(height)
-//        return this
-//    }
 
 
     inline fun <T : View> T.margin(anchor: Int, value: Int): T {
@@ -526,95 +474,50 @@ open class _ConstraintSet : ConstraintSet() {
                     HORIZONTAL -> connectHorizontal(this.id, endId, margin)
                     VERTICAL -> connectVertical(this.id, endId, margin)
                     ALL -> connectAll(this.id, endId, margin)
-                    else -> connect(sides.start of this.id, sides.end of endId, margin)
+                    else -> connect(this.id, sides.start, endId, sides.end, margin)
                 }
             } else {
                 when (sides) {
                     HORIZONTAL -> connectHorizontal(this.id, endId)
                     VERTICAL -> connectVertical(this.id, endId)
                     ALL -> connectAll(this.id, endId)
-                    else -> connect(sides.start of this.id, sides.end of endId)
+                    else -> connect(this.id, sides.start, endId, sides.end)
                 }
             }
         }
         return this
     }
 
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(start: View, startSide: Side, end: View, endSide: Side) = connect(start.id, startSide, end.id, endSide)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(start: View, startSide: Side, end: View, endSide: Side, margin: Int) = connect(start.id, startSide, end.id, endSide, margin)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId)"))
-    fun connect(start: View, startSide: Side, endId: Int, endSide: Side) = connect(start.id, startSide, endId, endSide)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of endId with margin)"))
-    fun connect(start: View, startSide: Side, endId: Int, endSide: Side, margin: Int) = connect(start.id, startSide, endId, endSide, margin)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(startId: Int, startSide: Side, end: View, endSide: Side) = connect(startId, startSide, end.id, endSide)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(startId: Int, startSide: Side, end: View, endSide: Side, margin: Int) = connect(startId, startSide, end.id, endSide, margin)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(start: SideViewId, end: SideViewId) = connect(start.viewId, start.side, end.viewId, end.side)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(start: SideViewId, end: SideViewId, margin: Int) = connect(start.viewId, start.side, end.viewId, end.side, margin)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end)"))
-    fun connect(con: SideViewSideView) = connect(con.from.view, con.from.side, con.to.view, con.to.side)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("start.connect(startSide to endSide of end with margin)"))
-    fun connect(con: SideViewSideView, margin: Int) = connect(con.from.view, con.from.side, con.to.view, con.to.side, margin)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId)"))
-    fun connectBaseline(viewId: ViewId, targetId: ViewId) = connect(viewId, BASELINE, targetId, BASELINE)
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(BASELINES of targetId with margin)"))
-    private fun connectBaseline(viewId: ViewId, targetId: ViewId, margin: Int) {
-        Log.w(TAG, "Baseline connection cannot define margin. Check your definition.")
-        connectBaseline(viewId, targetId)
-    }
-
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(HORIZONTAL of targetId)"))
-    fun connectHorizontal(viewId: ViewId, targetId: ViewId) {
+    private inline fun connectHorizontal(viewId: ViewId, targetId: ViewId) {
         connect(viewId, START, targetId, START)
         connect(viewId, LEFT, targetId, LEFT)
         connect(viewId, END, targetId, END)
         connect(viewId, RIGHT, targetId, RIGHT)
     }
 
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(HORIZONTAL of targetId with margin)"))
-    fun connectHorizontal(viewId: ViewId, targetId: ViewId, margin: Int) {
+    private inline fun connectHorizontal(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, START, targetId, START, margin)
         connect(viewId, LEFT, targetId, LEFT, margin)
         connect(viewId, END, targetId, END, margin)
         connect(viewId, RIGHT, targetId, RIGHT, margin)
     }
 
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERTICAL of targetId)"))
-    fun connectVertical(viewId: ViewId, targetId: ViewId) {
+    private inline fun connectVertical(viewId: ViewId, targetId: ViewId) {
         connect(viewId, TOP, targetId, TOP)
         connect(viewId, BOTTOM, targetId, BOTTOM)
     }
 
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(VERTICAL of targetId with margin)"))
-    fun connectVertical(viewId: ViewId, targetId: ViewId, margin: Int) {
+    private inline fun connectVertical(viewId: ViewId, targetId: ViewId, margin: Int) {
         connect(viewId, TOP, targetId, TOP, margin)
         connect(viewId, BOTTOM, targetId, BOTTOM, margin)
     }
 
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(ALL of targetId)"))
-    fun connectAll(viewId: ViewId, targetId: ViewId) {
+    private inline fun connectAll(viewId: ViewId, targetId: ViewId) {
         connectVertical(viewId, targetId)
         connectHorizontal(viewId, targetId)
     }
 
-    @Deprecated("Use View.connect() instead", replaceWith = ReplaceWith("viewId.connect(ALL of targetId with margin)"))
-    fun connectAll(viewId: ViewId, targetId: ViewId, margin: Int) {
+    private inline fun connectAll(viewId: ViewId, targetId: ViewId, margin: Int) {
         connectVertical(viewId, targetId, margin)
         connectHorizontal(viewId, targetId, margin)
     }
