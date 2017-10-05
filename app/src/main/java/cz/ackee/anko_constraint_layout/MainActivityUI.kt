@@ -25,7 +25,6 @@ class MainActivityUI : AnkoComponentEx<MainActivity>() {
         constraintLayout.isActivated = !constraintLayout.isActivated
     }
 
-
     override fun create(ui: AnkoContext<MainActivity>): View {
         return ui.constraintLayout {
 

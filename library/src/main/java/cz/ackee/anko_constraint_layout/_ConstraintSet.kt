@@ -137,8 +137,8 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
-    inline fun IntArray.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): IntArray {
-        chain(begin, end, CHAIN_PACKED, weights)
+    inline fun IntArray.chainPacked(begin: SideViewId, end: SideViewId): IntArray {
+        chain(begin, end, CHAIN_PACKED)
         return this
     }
 
@@ -157,8 +157,8 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
-    inline fun <T : View> Array<T>.chainPacked(begin: SideViewId, end: SideViewId, weights: FloatArray? = null): Array<T> {
-        chain(begin, end, CHAIN_PACKED, weights)
+    inline fun <T : View> Array<T>.chainPacked(begin: SideViewId, end: SideViewId): Array<T> {
+        chain(begin, end, CHAIN_PACKED)
         return this
     }
 

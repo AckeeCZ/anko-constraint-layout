@@ -316,7 +316,7 @@ Sample app can be found in `app` module.
 
 Add this dependency to your project:
 ```groovy
-implementation 'cz.ackee:anko-constraint-layout:0.5.0'
+implementation 'cz.ackee:anko-constraint-layout:0.6.2'
 ```
 
 This library is still in development and your implementation might break when minor version gets bumped up. For now, backwards non-compatible changes happens about once every week. 
