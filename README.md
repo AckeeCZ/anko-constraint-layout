@@ -320,7 +320,8 @@ background
 ```
 
 ## Sample
-Sample app can be found in `app` module.
+Sample app can be found in `app` module and compiled version can be downloaded from
+[Play Store](https://play.google.com/store/apps/details?id=cz.ackee.anko_constraint_layout)
 
 ## Dependencies
 Add this dependency to your project:
