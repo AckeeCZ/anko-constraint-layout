@@ -1,7 +1,7 @@
 # Anko Constraint Layout
 
 This library adds missing support for Constraint Layout in Anko library. It is 
-based on the `1.1.0-beta1` version of the library and adds support for `Group`, `Barrier` 
+based on the `1.1.0-beta1` version of the library and supports `Group`, `Barrier` 
 and `Placeholder` views as well.
 
 ## Usage
@@ -321,7 +321,7 @@ background
 
 ## Sample
 Sample app can be found in `app` module and compiled version can be downloaded from
-[Play Store](https://play.google.com/store/apps/details?id=cz.ackee.anko_constraint_layout)
+[Play Store](https://play.google.com/store/apps/details?id=cz.ackee.anko_constraint_layout).
 
 ## Dependencies
 Add this dependency to your project:
@@ -336,6 +336,6 @@ implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
 
 ## References
 For more information about Constraint Layout in general, check out these websites:
- * [constraintlayout.com](https://constraintlayout.com/)
- * [developer.android.com/constraint-layout](https://developer.android.com/training/constraint-layout/index.html)
- * [realm.io/advanced-constraintlayout](https://academy.realm.io/posts/360-andev-2017-nicolas-roard-advanced-constraintlayout/)
+ * https://constraintlayout.com/
+ * https://developer.android.com/training/constraint-layout/index.html
+ * https://academy.realm.io/posts/360-andev-2017-nicolas-roard-advanced-constraintlayout/
