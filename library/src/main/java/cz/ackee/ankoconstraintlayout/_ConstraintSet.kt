@@ -1,10 +1,10 @@
-package cz.ackee.anko_constraint_layout
+package cz.ackee.ankoconstraintlayout
 
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.view.View
 import android.widget.LinearLayout
-import cz.ackee.anko_constraint_layout.ViewIdGenerator.newId
+import cz.ackee.ankoconstraintlayout.ViewIdGenerator.newId
 
 
 typealias Side = Int

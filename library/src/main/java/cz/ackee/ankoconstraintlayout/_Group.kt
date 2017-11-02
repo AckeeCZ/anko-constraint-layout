@@ -1,6 +1,6 @@
 @file:Suppress("unused", "NOTHING_TO_INLINE")
 
-package cz.ackee.anko_constraint_layout
+package cz.ackee.ankoconstraintlayout
 
 import android.support.constraint.Group
 import android.view.View

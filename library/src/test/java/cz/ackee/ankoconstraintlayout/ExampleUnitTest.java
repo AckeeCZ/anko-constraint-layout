@@ -1,4 +1,4 @@
-package cz.ackee.anko_constraint_layout;
+package cz.ackee.ankoconstraintlayout;
 
 import org.junit.Test;
 

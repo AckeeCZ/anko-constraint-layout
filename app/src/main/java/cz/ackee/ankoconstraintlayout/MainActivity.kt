@@ -1,4 +1,4 @@
-package cz.ackee.anko_constraint_layout
+package cz.ackee.ankoconstraintlayout
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle

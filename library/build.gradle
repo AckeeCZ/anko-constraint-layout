@@ -18,6 +18,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    tasks.withType(Javadoc).all {
+        enabled = false
+    }
 }
 
 dependencies {
@@ -37,4 +40,9 @@ repositories {
     mavenCentral()
 }
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+
+apply from: rootProject.file('gradle/bintray/config.gradle')
+apply from: rootProject.file('gradle/bintray/install.gradle')
+apply from: rootProject.file('gradle/bintray/bintray.gradle')
+

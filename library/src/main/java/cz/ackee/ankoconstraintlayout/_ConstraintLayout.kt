@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package cz.ackee.anko_constraint_layout
+package cz.ackee.ankoconstraintlayout
 
 import android.app.Activity
 import android.content.Context

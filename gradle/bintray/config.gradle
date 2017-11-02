@@ -1,0 +1,22 @@
+ext {
+    bintrayRepo = 'anko-constraint-layout'
+    bintrayName = 'anko-constraint-layout'
+
+    publishedGroupId = 'cz.ackee'
+    publishedArtifactId = 'anko-constraint-layout'
+
+    libraryName = 'Anko Constraint Layout'
+    libraryDescription = 'DSL implementation of constraint layout for anko'
+    libraryVersion = '0.6.3'
+
+    siteUrl = 'https://github.com/AckeeCZ/anko-constraint-layout'
+    gitUrl = 'https://github.com/AckeeCZ/anko-constraint-layout.git'
+
+    developerId = 'ackee'
+    developerName = 'Ackee'
+    developerEmail = 'info@ackee.cz'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}

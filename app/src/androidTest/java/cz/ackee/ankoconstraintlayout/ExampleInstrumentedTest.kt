@@ -1,4 +1,4 @@
-package cz.ackee.anko_constraint_layout
+package cz.ackee.ankoconstraintlayout
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
