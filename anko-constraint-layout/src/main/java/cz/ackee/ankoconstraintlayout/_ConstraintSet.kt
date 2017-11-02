@@ -24,6 +24,7 @@ open class _ConstraintSet : ConstraintSet() {
 
     val parentId: ViewId = ConstraintLayout.LayoutParams.PARENT_ID
 
+    @Deprecated("defaultWidth/Height(MATCH_CONSTRAINT_WRAP) is deprecated. Use width/height(WRAP_CONTENT) and layout_constrainedWidth/Height = true instead.")
     val MATCH_CONSTRAINT_WRAP: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_WRAP
     val MATCH_CONSTRAINT_SPREAD: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD
     val MATCH_CONSTRAINT_PERCENT: DefaultSize = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT

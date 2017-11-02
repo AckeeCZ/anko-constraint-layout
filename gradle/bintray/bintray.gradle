@@ -52,13 +52,11 @@ bintray {
             desc = libraryDescription
             name = libraryVersion
             released = new Date()
-//            vcsTag = 'v0.1.1'
 
-//            gpg {
-//                sign = true //Determines whether to GPG sign the files. The default is false
-//                passphrase = properties.getProperty("bintray.gpg.password")
-//                //Optional. The passphrase for GPG signing'
-//            }
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+//                passphrase = properties.getProperty("bintray.gpg.password")  //Optional. The passphrase for GPG signing'
+            }
         }
     }
 }

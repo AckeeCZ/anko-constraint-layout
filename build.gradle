@@ -18,7 +18,11 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://dl.bintray.com/ackee/anko-constraint-layout' }
+
+//        // Use this repository in case it hasn't been synced to jcenter yet
+//        maven { url 'https://dl.bintray.com/ackee/anko-constraint-layout' }
+
+//        // Use this repository for internal libraries in amazon S3
 //        maven {
 //            name "s3releases"
 //            url "s3://android-maven/releases"

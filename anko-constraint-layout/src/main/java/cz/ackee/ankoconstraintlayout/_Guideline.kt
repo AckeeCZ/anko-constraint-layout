@@ -12,7 +12,7 @@ import org.jetbrains.anko.custom.ankoView
  * If you don't specify id for the guideline, new unique id will be generated automatically.
  *
  * There are no more settings for Guideline except its orientation and guide size (margin /
- * percentage). For that reason init lambda is not provided as serves no purpose.
+ * percentage). For that reason init lambda is not provided as it serves no purpose.
  *
  * These extension functions generate a [Guideline] as a [android.view.View]. Use these functions inside of
  * constraintLayout {} init block, not inside of constraints {} block. For definition of guidelines

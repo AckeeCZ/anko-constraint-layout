@@ -238,17 +238,38 @@ layout params of the placeholder. When you set another view as a content of the 
 (or pass null as the content view), the original view will return to its original 
 position and size. 
 
-### Percent dimensions
-Currently it is not possible to define percent dimensions through Constraint Set. 
-To use percent dimensions, you must define attributes directly in the view's layout params.
+### Percent dimensions, constrained dimensions
+See [official docs](https://developer.android.com/reference/android/support/constraint/ConstraintLayout.html#DimensionConstraints)
+for more information.
+
+Currently it is not possible to define these dimensions through Constraint Set. 
+To use them, you must define attributes directly in the view's layout params.
 ```kotlin
 constraintLayout {
     button().lparams {
+        constrainedWidth = true
+    
         matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT
         matchConstraintPercentWidth = 0.8f
     }
 }
 ```
+
+### Circular positioning
+Currently it is not possible to define circular positioning through Constraint Set either. 
+To use circular positioning, you must define attributes directly in the view's layout params.
+```kotlin
+constraintLayout {
+    val centerView = view()
+
+    view().lparams {
+        circleConstraint = centerView.id
+        circleRadius = 45
+        circleRadius = 8.dp
+    }
+}
+```
+
 
 ## IDs
 Constraint Layout heavily depends on ids of its child views. 
