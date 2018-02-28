@@ -291,6 +291,11 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
+    inline fun <T : View> T.percentWidth(percent: Float): T {
+        constrainPercentWidth(this.id, percent)
+        return this
+    }
+
     inline fun <T : View> T.defaultWidth(width: DefaultSize): T {
         constrainDefaultWidth(this.id, width)
         return this
@@ -312,11 +317,20 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
+    inline fun <T : View> T.percentHeight(percent: Float): T {
+        constrainPercentHeight(this.id, percent)
+        return this
+    }
+
     inline fun <T : View> T.defaultHeight(height: DefaultSize): T {
         constrainDefaultHeight(this.id, height)
         return this
     }
 
+    inline fun <T : View> T.circle(id: Int, radius: Int, angle: Float): T {
+        constrainCircle(this.id, id, radius, angle)
+        return this
+    }
 
     inline fun <T : View> T.size(width: Int, height: Int): T {
         width(width)
@@ -333,6 +347,12 @@ open class _ConstraintSet : ConstraintSet() {
     inline fun <T : View> T.minSize(width: Int, height: Int): T {
         minWidth(width)
         minHeight(height)
+        return this
+    }
+
+    inline fun <T : View> T.percentSize(width: Float, height: Float): T {
+        percentWidth(width)
+        percentHeight(height)
         return this
     }
 
@@ -526,7 +546,6 @@ open class _ConstraintSet : ConstraintSet() {
 
     //<editor-fold desc="<< Helper classes and infix operators >>">
     open inner class SideSide(val start: Side, val end: Side)
-
     open inner class SideSideView(sides: SideSide, val view: View) : SideSideViewId(sides, view.id)
     open inner class SideSideViewId(val sides: SideSide, val viewId: ViewId)
     open inner class SideSideViewMargin(sides: SideSide, view: View, margin: Int) : SideSideViewIdMargin(sides, view.id, margin)
@@ -542,21 +561,21 @@ open class _ConstraintSet : ConstraintSet() {
     open inner class SideViewMargin(sideView: SideView, margin: Int) : SideViewIdMargin(sideView, margin)
     open inner class SideViewIdMargin(sideViewId: SideViewId, val margin: Int) : SideViewId(sideViewId.side, sideViewId.viewId)
 
-    infix inline fun Side.to(side: Side) = SideSide(this, side)
-    infix inline fun SideSide.of(view: View) = SideSideView(this, view)
-    infix inline fun SideSide.of(viewId: ViewId) = SideSideViewId(this, viewId)
-    infix inline fun SideSideView.with(margin: Int) = SideSideViewMargin(sides, view, margin)
-    infix inline fun SideSideViewId.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
-    infix inline fun Side.of(view: View) = SideView(this, view)
-    infix inline fun Side.of(viewId: ViewId) = SideViewId(this, viewId)
-    infix inline fun SideView.to(side: Side) = SideViewSide(this, side)
-    infix inline fun SideViewId.to(side: Side) = SideViewIdSide(this, side)
-    infix inline fun SideViewSide.of(view: View) = SideViewSideView(sideView, SideView(side, view))
-    infix inline fun SideViewSide.of(viewId: ViewId) = SideViewSideViewId(sideView, SideViewId(side, viewId))
-    infix inline fun SideViewIdSide.of(view: View) = SideViewIdSideView(sideViewId, SideView(side, view))
-    infix inline fun SideViewIdSide.of(viewId: ViewId) = SideViewIdSideViewId(sideViewId, SideViewId(side, viewId))
-    infix inline fun SideView.with(margin: Int) = SideViewMargin(this, margin)
-    infix inline fun SideViewId.with(margin: Int) = SideViewIdMargin(this, margin)
+    inline infix fun Side.to(side: Side) = SideSide(this, side)
+    inline infix fun SideSide.of(view: View) = SideSideView(this, view)
+    inline infix fun SideSide.of(viewId: ViewId) = SideSideViewId(this, viewId)
+    inline infix fun SideSideView.with(margin: Int) = SideSideViewMargin(sides, view, margin)
+    inline infix fun SideSideViewId.with(margin: Int) = SideSideViewIdMargin(sides, viewId, margin)
+    inline infix fun Side.of(view: View) = SideView(this, view)
+    inline infix fun Side.of(viewId: ViewId) = SideViewId(this, viewId)
+    inline infix fun SideView.to(side: Side) = SideViewSide(this, side)
+    inline infix fun SideViewId.to(side: Side) = SideViewIdSide(this, side)
+    inline infix fun SideViewSide.of(view: View) = SideViewSideView(sideView, SideView(side, view))
+    inline infix fun SideViewSide.of(viewId: ViewId) = SideViewSideViewId(sideView, SideViewId(side, viewId))
+    inline infix fun SideViewIdSide.of(view: View) = SideViewIdSideView(sideViewId, SideView(side, view))
+    inline infix fun SideViewIdSide.of(viewId: ViewId) = SideViewIdSideViewId(sideViewId, SideViewId(side, viewId))
+    inline infix fun SideView.with(margin: Int) = SideViewMargin(this, margin)
+    inline infix fun SideViewId.with(margin: Int) = SideViewIdMargin(this, margin)
     //</editor-fold>
 
 }

@@ -40,6 +40,6 @@ abstract class AnkoComponentEx<in T>: AnkoComponent<T> {
 		return create(ui)
 	}
 
-	abstract protected fun create(ui: AnkoContext<T>): View
+	protected abstract fun create(ui: AnkoContext<T>): View
 
 }
