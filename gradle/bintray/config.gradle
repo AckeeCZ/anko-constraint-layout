@@ -7,7 +7,7 @@ ext {
 
     libraryName = 'Anko Constraint Layout'
     libraryDescription = 'DSL implementation of constraint layout for anko'
-    libraryVersion = '0.6.6'
+    libraryVersion = '0.6.7'
 
     siteUrl = 'https://github.com/AckeeCZ/anko-constraint-layout'
     gitUrl = 'https://github.com/AckeeCZ/anko-constraint-layout.git'

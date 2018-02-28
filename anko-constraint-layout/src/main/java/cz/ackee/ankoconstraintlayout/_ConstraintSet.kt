@@ -327,8 +327,13 @@ open class _ConstraintSet : ConstraintSet() {
         return this
     }
 
-    inline fun <T : View> T.circle(id: Int, radius: Int, angle: Float): T {
-        constrainCircle(this.id, id, radius, angle)
+    inline fun <T : View> T.circle(viewId: ViewId, radius: Int, angle: Float): T {
+        constrainCircle(this.id, viewId, radius, angle)
+        return this
+    }
+
+    inline fun <T : View> T.circle(view: View, radius: Int, angle: Float): T {
+        constrainCircle(this.id, view.id, radius, angle)
         return this
     }
 
