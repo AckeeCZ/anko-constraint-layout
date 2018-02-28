@@ -108,9 +108,9 @@ For more information about chains, have a look at [this great article](https://m
 
 ### Dimensions and Ratios
 You can define view's width and height with `width()` and `height()` or `size()` methods.
-Moreover you can define an [aspect ratio](https://developer.android.com/training/constraint-layout/index.html#ratio) 
-for any view with `aspectRatio()` method. To make aspect ratio work you must set at least one of 
-height and width to `matchConstraint`.
+Moreover you can define an [dimension ratio](https://developer.android.com/training/constraint-layout/index.html#ratio) 
+(also refered to as aspect ratio) for any view with `dimensionRatio()` method. To make aspect 
+ratio work you must set at least one of height and width to `matchConstraint`.
 
 ```kotlin
 constraints {
@@ -242,8 +242,8 @@ position and size.
 See [official docs](https://developer.android.com/reference/android/support/constraint/ConstraintLayout.html#DimensionConstraints)
 for more information.
 
-Currently it is not possible to define these dimensions through Constraint Set. 
-To use them, you must define attributes directly in the view's layout params.
+Prior to version 1.1.0-beta 5 it was not possible to define these dimensions through Constraint Set. 
+To use them, you had to define attributes directly in the view's layout params.
 ```kotlin
 constraintLayout {
     button().lparams {
@@ -255,17 +255,24 @@ constraintLayout {
 }
 ```
 
+Now you can set percent dimensions to the Constraint Set.
+```kotlin
+constraints {
+    button.width(matchConstraint)
+    button.percentWidth(0.8f)
+}
+```
+
+
+
 ### Circular positioning
-Currently it is not possible to define circular positioning through Constraint Set either. 
-To use circular positioning, you must define attributes directly in the view's layout params.
+With version 1.1.0-beta 5 you can now set circular positioning through Constrain Set as well.
 ```kotlin
 constraintLayout {
     val centerView = view()
-
-    view().lparams {
-        circleConstraint = centerView.id
-        circleRadius = 45
-        circleRadius = 8.dp
+    
+    constraints {
+        button.circle(centerView, 32.dp, 45f)
     }
 }
 ```
@@ -347,12 +354,12 @@ Sample app can be found in `app` module and compiled version can be downloaded f
 ## Dependencies
 Add this dependency to your project:
 ```groovy
-implementation 'cz.ackee:anko-constraint-layout:0.6.5'
+implementation 'cz.ackee:anko-constraint-layout:0.6.7'
 ```
 This library is based on the beta version of support library so make sure you add dependency for 
-`1.1.0-beta3` version instead of `1.0.2` version:
+`1.1.0-beta5` version instead of `1.0.2` version:
 ```groovy
-implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
+implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
 ```
 
 ## References
