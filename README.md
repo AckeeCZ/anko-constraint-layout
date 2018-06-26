@@ -1,7 +1,7 @@
 # Anko Constraint Layout
 
 This library adds missing support for Constraint Layout in Anko library. It is 
-based on the `1.1.0-beta5` version of the library and supports `Group`, `Barrier` 
+based on the `1.1.2` version of the library and supports `Group`, `Barrier` 
 and `Placeholder` views as well.
 
 ## Usage
