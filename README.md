@@ -115,7 +115,7 @@ ratio work you must set at least one of height and width to `matchConstraint`.
 ```kotlin
 constraints {
     image.size(matchConstraint, matchConstraint)
-    image.aspectRatio("H,16:9")
+    image.dimensionRatio("H,16:9")
 }                
 ```
 
