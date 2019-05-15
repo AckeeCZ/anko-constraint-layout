@@ -4,11 +4,11 @@ package cz.ackee.ankoconstraintlayout
 
 import android.app.Activity
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import org.jetbrains.anko.AnkoViewDslMarker
 import org.jetbrains.anko.custom.ankoView
 
@@ -22,10 +22,10 @@ import org.jetbrains.anko.custom.ankoView
 @Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanPrivate")
 open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
 
-    val matchConstraint: Int = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+    val matchConstraint: Int = LayoutParams.MATCH_CONSTRAINT
     @Deprecated("You shouldn't use match_parent inside of ConstraintLayout")
-    val matchParent: Int = ConstraintLayout.LayoutParams.MATCH_PARENT
-    val wrapContent: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
+    val matchParent: Int = LayoutParams.MATCH_PARENT
+    val wrapContent: Int = LayoutParams.WRAP_CONTENT
 
     /**
      * If true, automatically generate unique ids for views added to the constraint layout.
@@ -86,9 +86,9 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     inline fun <T : View> T.lparams(
             c: Context?,
             attrs: AttributeSet?,
-            init: ConstraintLayout.LayoutParams.() -> Unit
+            init: LayoutParams.() -> Unit
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(c!!, attrs!!)
+        val layoutParams = LayoutParams(c!!, attrs!!)
         layoutParams.init()
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
@@ -99,18 +99,18 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
             c: Context?,
             attrs: AttributeSet?
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(c!!, attrs!!)
+        val layoutParams = LayoutParams(c!!, attrs!!)
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-            width: Int = android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-            height: Int = android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-            init: ConstraintLayout.LayoutParams.() -> Unit
+            width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
+            height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
+            init: LayoutParams.() -> Unit
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(width, height)
+        val layoutParams = LayoutParams(width, height)
         layoutParams.init()
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
@@ -118,10 +118,10 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     }
 
     inline fun <T : View> T.lparams(
-            width: Int = android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-            height: Int = android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+            width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
+            height: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(width, height)
+        val layoutParams = LayoutParams(width, height)
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
         return this
@@ -129,9 +129,9 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
 
     inline fun <T : View> T.lparams(
             source: ViewGroup.LayoutParams?,
-            init: ConstraintLayout.LayoutParams.() -> Unit
+            init: LayoutParams.() -> Unit
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(source!!)
+        val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
@@ -141,16 +141,16 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     inline fun <T : View> T.lparams(
             source: ViewGroup.LayoutParams?
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(source!!)
+        val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-            source: ViewGroup.MarginLayoutParams?,
-            init: ConstraintLayout.LayoutParams.() -> Unit
+            source: MarginLayoutParams?,
+            init: LayoutParams.() -> Unit
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(source!!)
+        val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
@@ -158,19 +158,19 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     }
 
     inline fun <T : View> T.lparams(
-            source: ViewGroup.MarginLayoutParams?
+            source: MarginLayoutParams?
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(source!!)
+        val layoutParams = LayoutParams(source!!)
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-            source: ConstraintLayout.LayoutParams?,
-            init: ConstraintLayout.LayoutParams.() -> Unit
+            source: LayoutParams?,
+            init: LayoutParams.() -> Unit
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(source!!)
+        val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
@@ -178,9 +178,9 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
     }
 
     inline fun <T : View> T.lparams(
-            source: ConstraintLayout.LayoutParams?
+            source: LayoutParams?
     ): T {
-        val layoutParams = ConstraintLayout.LayoutParams(source!!)
+        val layoutParams = LayoutParams(source!!)
         layoutParams.validate()
         this@lparams.layoutParams = layoutParams
         return this

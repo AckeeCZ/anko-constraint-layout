@@ -1,7 +1,7 @@
 package cz.ackee.ankoconstraintlayout
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import org.jetbrains.anko.setContentView
 
 /**
@@ -14,5 +14,4 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         MainActivityUI().setContentView(this)
     }
-
 }
