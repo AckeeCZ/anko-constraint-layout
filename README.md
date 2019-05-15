@@ -359,7 +359,7 @@ implementation 'cz.ackee:anko-constraint-layout:1.2.0'
 This library is based on the `1.1.3` version of support library so make sure you add appropriate
 dependency.
 ```groovy
-implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 ```
 
 ## References
