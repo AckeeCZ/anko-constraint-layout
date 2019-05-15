@@ -1,7 +1,7 @@
 # Anko Constraint Layout
 
 This library adds missing support for Constraint Layout in Anko library. It is 
-based on the `1.1.0-beta5` version of the library and supports `Group`, `Barrier` 
+based on the `1.1.2` version of the library and supports `Group`, `Barrier` 
 and `Placeholder` views as well.
 
 ## Usage
@@ -354,12 +354,12 @@ Sample app can be found in `app` module and compiled version can be downloaded f
 ## Dependencies
 Add this dependency to your project:
 ```groovy
-implementation 'cz.ackee:anko-constraint-layout:0.6.7'
+implementation 'cz.ackee:anko-constraint-layout:1.1.2'
 ```
-This library is based on the beta version of support library so make sure you add dependency for 
-`1.1.0-beta5` version instead of `1.0.2` version:
+This library is based on the `1.1.2` version of support library so make sure you add appropriate 
+dependency.
 ```groovy
-implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
+implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 ```
 
 ## References

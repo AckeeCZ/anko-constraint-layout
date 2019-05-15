@@ -2,8 +2,8 @@
 
 package cz.ackee.ankoconstraintlayout
 
-import android.support.constraint.ConstraintHelper
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintHelper
 
 /**
  * A set of helper functions to manipulate referencedIds in [ConstraintHelper] class.

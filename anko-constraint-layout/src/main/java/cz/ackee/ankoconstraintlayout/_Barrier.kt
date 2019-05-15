@@ -2,8 +2,8 @@
 
 package cz.ackee.ankoconstraintlayout
 
-import android.support.constraint.Barrier
 import android.view.View
+import androidx.constraintlayout.widget.Barrier
 import org.jetbrains.anko.custom.ankoView
 
 /**
