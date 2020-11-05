@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cz.ackee.anko_constraint_layout" />
+<manifest package="cz.ackee.anko_constraint_layout" />
