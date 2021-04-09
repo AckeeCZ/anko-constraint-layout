@@ -50,6 +50,11 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
         // being rendered might change.)
         if (generateIds) {
             if (view.id == View.NO_ID) {
+                // Saved state has to be disabled for those generated ids because they will
+                // change during next view recreation. Framework then could try to deliver incorrect
+                // saved state object of other view, which had assigned this new id in the previous
+                // view hierarchy and it can crash the application.
+                view.isSaveEnabled = false
                 view.id = ViewIdGenerator.newId()
             }
         }
