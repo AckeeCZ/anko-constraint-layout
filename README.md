@@ -1,3 +1,4 @@
+[ ![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.ackeecz/anko-constraint-layout/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.ackeecz/anko-constraint-layout)
 # Anko Constraint Layout
 
 This library adds missing support for Constraint Layout in Anko library. It is 
@@ -348,13 +349,12 @@ background
 ```
 
 ## Sample
-Sample app can be found in `app` module and compiled version can be downloaded from
-[Play Store](https://play.google.com/store/apps/details?id=cz.ackee.anko_constraint_layout).
+Sample app can be found in `app` module.
 
 ## Dependencies
 Add this dependency to your project:
 ```groovy
-implementation 'cz.ackee:anko-constraint-layout:1.2.0'
+implementation 'io.github.ackeecz:anko-constraint-layout:2.0.0'
 ```
 This library is based on the `1.1.3` version of support library so make sure you add appropriate
 dependency.

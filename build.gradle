@@ -3,12 +3,13 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.30"
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.22.0'
     }
 }
 
@@ -16,30 +17,18 @@ allprojects {
     repositories {
         google()
         jcenter()
-
-//        // Use this repository in case it hasn't been synced to jcenter yet
-//        maven { url 'https://dl.bintray.com/ackee/anko-constraint-layout' }
-
-//        // Use this repository for internal libraries in amazon S3
-//        maven {
-//            name "s3releases"
-//            url "s3://android-maven/releases"
-//            credentials(AwsCredentials) {
-//                accessKey AWS_ACCESS_KEY
-//                secretKey AWS_SECRET_KEY
-//            }
-//        }
-//        maven {
-//            name "s3snapshots"
-//            url "s3://android-maven/snapshots"
-//            credentials(AwsCredentials) {
-//                accessKey AWS_ACCESS_KEY
-//                secretKey AWS_SECRET_KEY
-//            }
-//        }
+        mavenCentral()
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+/**
+ * Define properties with library info
+ */
+ext.libProperties = new Properties()
+ext.libProperties.load(file("${rootDir}/lib.properties").newReader())
+
+apply plugin: 'io.codearte.nexus-staging' // this should be at the end of the file
