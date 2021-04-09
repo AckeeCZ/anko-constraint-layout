@@ -1,9 +1,9 @@
 package cz.ackee.ankoconstraintlayout
 
-import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import cz.ackee.ankoconstraintlayout.ViewIdGenerator.newId
 
 
@@ -17,10 +17,8 @@ typealias GuideStyle = Int
  * @author David Khol [david.khol@ackee.cz]
  * @since 16.8.2017
  **/
-@Suppress("MemberVisibilityCanPrivate", "unused", "NOTHING_TO_INLINE", "PropertyName")
+@Suppress("MemberVisibilityCanPrivate", "unused", "NOTHING_TO_INLINE", "PropertyName", "MemberVisibilityCanBePrivate")
 open class _ConstraintSet : ConstraintSet() {
-
-    private val TAG: String = javaClass.simpleName
 
     val parentId: ViewId = ConstraintLayout.LayoutParams.PARENT_ID
 
@@ -223,7 +221,6 @@ open class _ConstraintSet : ConstraintSet() {
         setVerticalWeight(this.id, weight)
         return this
     }
-
 
     //</editor-fold>
 

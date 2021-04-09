@@ -1,8 +1,8 @@
 package cz.ackee.ankoconstraintlayout
 
-import android.support.constraint.ConstraintSet
 import android.view.View
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintSet
 import cz.ackee.anko_constraint_layout.*
 import org.jetbrains.anko.*
 
