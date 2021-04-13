@@ -27,7 +27,6 @@ jobs:
           GPG_KEY: ${{ secrets.ANDROID_GPG_KEY }}
           SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.ANDROID_SECRET_RING_FILE }}
         run: |
-          git fetch --unshallow
           sudo bash -c "echo '$GPG_KEY' | base64 -d > '$SIGNING_SECRET_KEY_RING_FILE'"
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
