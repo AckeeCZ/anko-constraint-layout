@@ -4,11 +4,14 @@ package io.github.ackeecz.ankoconstraintlayout
 
 import android.app.Activity
 import android.content.Context
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewManager
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
 import org.jetbrains.anko.AnkoViewDslMarker
 import org.jetbrains.anko.custom.ankoView
 
@@ -59,6 +62,48 @@ open class _ConstraintLayout(ctx: Context) : ConstraintLayout(ctx) {
             }
         }
         super.onViewAdded(view)
+    }
+
+    /**
+     * Dispatches restore instance state call. It basically copy pastes parent [ViewGroup]
+     * implementation, but it fixes the situation, when the [View.isSaveEnabled] is false for the
+     * [View]. In standard implementation, [View.isSaveEnabled] is not taken into consideration when
+     * restoring the instance state and it is trying to incorrectly restore it even if
+     * [View.isSaveEnabled] is false, which can lead to crashes when generated ids are used. The
+     * issue is described in more detail in [tryToRestoreHierarchyState].
+     */
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>?) {
+        super.dispatchThawSelfOnly(container)
+        children.forEach { view ->
+            if (view.isSaveFromParentEnabled) {
+                view.tryToRestoreHierarchyState(container)
+            }
+        }
+    }
+
+    private fun View.tryToRestoreHierarchyState(container: SparseArray<Parcelable>?) {
+        if (isSaveEnabled) {
+            restoreHierarchyState(container)
+        } else {
+            /*
+             * Since there is a bug in View.dispatchRestoreInstanceState and it tries to restore the
+             * instance state even though saving state is disabled, we temporarily set the view id
+             * to Int.MIN_VALUE, then call restoreHierarchyState to try to restore the instance
+             * state normally (this is needed for ViewGroups which then recursively have to try
+             * to restore its children instance states too) and then set the original id back to the
+             * view. This way, when view is using dynamically generated id, it will correctly never
+             * find any saved state tied to its temporary Int.MIN_VALUE id. Otherwise it could happen
+             * that there is actually some generated id tied to some instance state from the previous
+             * view hierarchy and if this view during process restoration got this same id, it could crash,
+             * because it would think, that this saved state belongs to it, even though it would belong
+             * to a completely different view, which also uses generated id and saves instance state
+             * (for example ViewPager2 does this).
+             */
+            val originalViewId = id
+            id = Int.MIN_VALUE
+            restoreHierarchyState(container)
+            id = originalViewId
+        }
     }
 
     /**
