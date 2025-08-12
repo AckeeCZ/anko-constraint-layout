@@ -1,3 +1,7 @@
+# ⚠️ DEPRECATED ⚠️
+This library is in **maintenance mode**.  
+No new features will be added. Only critical bug fixes and security patches will be made.
+
 [ ![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.ackeecz/anko-constraint-layout/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.ackeecz/anko-constraint-layout)
 # Anko Constraint Layout
 
